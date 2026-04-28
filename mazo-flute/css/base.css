@@ -1,0 +1,86 @@
+/* =============================================
+   BASE.CSS — Reset, variáveis, tipografia
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Paleta */
+  --navy:    #0f1b2d;
+  --navy2:   #16273d;
+  --navy3:   #1d3454;
+  --gold:    #c9a96e;
+  --gold2:   #e8c99a;
+  --gold3:   #a8834a;
+  --cream:   #f5f0e8;
+  --cream2:  #ede8df;
+  --cream3:  #e3dcce;
+  --text:    #1a1a2e;
+  --muted:   #6b6880;
+  --white:   #ffffff;
+
+  /* Bordas */
+  --border:  rgba(201,169,110,0.20);
+  --border2: rgba(201,169,110,0.35);
+
+  /* Feedback */
+  --success: #3d8b6e;
+  --danger:  #c0392b;
+  --warn:    #d4860a;
+
+  /* Layout */
+  --radius:  14px;
+  --shadow:  0 8px 32px rgba(15,27,45,0.10);
+
+  /* Tipografia */
+  --ff-display: 'Cormorant Garamond', Georgia, serif;
+  --ff-body:    'DM Sans', system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--ff-body);
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ---- Utilidades globais ---- */
+.hidden { display: none !important; }
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.badge--gold    { background: var(--gold);  color: var(--navy); }
+.badge--success { background: rgba(61,139,110,0.12); color: var(--success); }
+.badge--muted   { background: var(--cream2); color: var(--muted); }
+.badge--warn    { background: rgba(212,134,10,0.12); color: var(--warn); }
+
+/* ---- Animações ---- */
+@keyframes risein {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0   rgba(201,169,110,0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(201,169,110,0); }
+  100% { box-shadow: 0 0 0 0   rgba(201,169,110,0); }
+}
