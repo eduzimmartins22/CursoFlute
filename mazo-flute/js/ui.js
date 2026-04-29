@@ -265,14 +265,34 @@ const UI = (() => {
   function _tplPageEscalas() {
     return `
     <div id="page-escalas" class="page">
-      <div class="sec-title">🎼 Escalas Maiores</div>
+
+      <div class="sec-title">🎼 Escalas & Circuitos</div>
+
       <div class="cbox">
-        <p>As escalas são a base de todo técnico musical. Pratique cada uma até executá-la perfeitamente, sem interrupções, com boa afinação e sonoridade uniforme.</p>
-        <p>Quando o maestro ou a base solta um <em>"A música é em Si♭"</em> e em seguida vem aquele <em>"Vai, flauta!!"</em> — você precisa saber imediatamente qual escala usar.</p>
-        <div class="tip">💡 <strong>Comece por Dó Maior</strong> (sem acidentes). Domine completamente antes de passar à próxima. Si♭ é a mais importante para o louvor!</div>
+        <p>As escalas são a base de todo técnico musical. Quando o maestro diz
+        <em>"A música é em Si♭"</em> e vem aquele <em>"Vai, flauta!!"</em> — você precisa reagir imediatamente.</p>
+        <div class="tip">💡 <strong>Comece por Dó Maior</strong> — sem acidentes. Domine completamente antes de passar à próxima. <strong>Si♭ é a mais importante para o louvor!</strong></div>
       </div>
+
+      <!-- Tabs dos circuitos -->
+      <div class="circuit-tabs">
+        <button class="circuit-tab active" onclick="UI.switchCircuit('fifths', this)">
+          🔺 Circuito das Quintas (#)
+        </button>
+        <button class="circuit-tab" onclick="UI.switchCircuit('fourths', this)">
+          🔻 Circuito das Quartas (♭)
+        </button>
+      </div>
+
+      <!-- Explicação do circuito ativo -->
+      <div id="circuitExplainer" class="cbox"></div>
+
+      <!-- Grade de escalas do circuito ativo -->
       <div class="scales-grid" id="scalesGrid"></div>
+
+      <!-- Detalhe da escala clicada -->
       <div id="scaleDetail"></div>
+
     </div>`;
   }
 
@@ -462,29 +482,103 @@ const UI = (() => {
     }).join('');
   }
 
+  let _activeCircuit = 'fifths';
+
   function _hydrateScales() {
-    const grid = document.getElementById('scalesGrid');
-    if (!grid) return;
-    grid.innerHTML = SCALES_DATA.map(s => `
-      <div class="scale-box" onclick="UI.showScale('${s.key}', this)">
-        <div class="sc-name">${s.name}</div>
-        <div class="sc-info">${s.info}</div>
-      </div>`).join('');
+    switchCircuit('fifths', document.querySelector('.circuit-tab'));
   }
 
   // ── Escalas ───────────────────────────────────
+
+  function switchCircuit(circuit, tabEl) {
+    _activeCircuit = circuit;
+
+    // Atualizar tabs
+    document.querySelectorAll('.circuit-tab').forEach(t => t.classList.remove('active'));
+    if (tabEl) tabEl.classList.add('active');
+
+    // Limpar detalhe
+    const detail = document.getElementById('scaleDetail');
+    if (detail) detail.innerHTML = '';
+
+    // Explainer do circuito
+    const explainer = document.getElementById('circuitExplainer');
+    if (circuit === 'fifths') {
+      explainer.innerHTML = `
+        <h4>🔺 Circuito das Quintas — Sustenidos (#)</h4>
+        <p>A <strong>5ª nota</strong> da escala atual se torna a <strong>1ª nota</strong> da próxima.
+        A cada nova escala, <strong>a última nota é sustenida</strong> (exceto Dó Maior).</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:.75rem">
+          ${CIRCLE_OF_FIFTHS.map((c,i) => `
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="background:var(--navy);color:var(--gold2);padding:3px 10px;border-radius:20px;font-size:.8rem;font-weight:600">${c.name}</span>
+              ${i < CIRCLE_OF_FIFTHS.length-1 ? '<span style="color:var(--muted);font-size:.8rem">→ quinta ↗</span>' : ''}
+            </div>`).join('')}
+        </div>`;
+    } else {
+      explainer.innerHTML = `
+        <h4>🔻 Circuito das Quartas — Bemóis (♭)</h4>
+        <p>A <strong>4ª nota</strong> da escala atual se torna a <strong>1ª nota</strong> da próxima.
+        A cada nova escala, <strong>a 4ª nota é bemolizada</strong>.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:.75rem">
+          ${CIRCLE_OF_FOURTHS.map((c,i) => `
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="background:var(--navy3);color:var(--gold2);padding:3px 10px;border-radius:20px;font-size:.8rem;font-weight:600">${c.name}</span>
+              ${i < CIRCLE_OF_FOURTHS.length-1 ? '<span style="color:var(--muted);font-size:.8rem">→ quarta ↘</span>' : ''}
+            </div>`).join('')}
+        </div>`;
+    }
+
+    // Renderizar grade do circuito ativo
+    const grid = document.getElementById('scalesGrid');
+    if (!grid) return;
+    const filtered = SCALES_DATA.filter(s => s.circuit === circuit);
+    grid.innerHTML = filtered.map((s, i) => {
+      const accent = circuit === 'fifths'
+        ? `${s.sharps !== '—' ? s.sharps : 'Natural'}`
+        : `${s.flats}`;
+      const stepLabel = circuit === 'fifths'
+        ? (i === 0 ? 'Início' : `${i * 7}ª pos.`)
+        : (i === 0 ? 'Início' : `${i * 5}ª pos.`);
+      return `
+      <div class="scale-box" onclick="UI.showScale('${s.key}', this)" data-circuit="${circuit}">
+        <div class="sc-step">${stepLabel}</div>
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-info">${circuit === 'fifths' ? (s.sharps === '—' ? '0 #' : s.sharps.split(' · ').length + '#') : s.flats.split(' · ').length + '♭'}</div>
+      </div>`;
+    }).join('');
+  }
 
   function showScale(key, el) {
     const s = SCALES_DATA.find(x => x.key === key);
     if (!s) return;
     document.querySelectorAll('.scale-box').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
+
+    const acidentsLabel = s.circuit === 'fifths'
+      ? `Sustenidos: <strong>${s.sharps}</strong>`
+      : `Bemóis: <strong>${s.flats}</strong>`;
+
+    // Build note row with highlights
+    const notesCells = s.cipher.split(' · ').map((n, i) => {
+      const isAccident = (s.circuit === 'fifths' && n.includes('#')) ||
+                         (s.circuit === 'fourths' && n.includes('♭'));
+      return `<span style="
+        display:inline-block;padding:5px 10px;margin:2px;border-radius:8px;
+        background:${isAccident ? 'var(--gold)' : 'var(--cream2)'};
+        color:${isAccident ? 'var(--navy)' : 'var(--text)'};
+        font-weight:${isAccident ? '700' : '500'};font-size:.9rem">${n}</span>`;
+    }).join('');
+
     const detail = document.getElementById('scaleDetail');
     detail.innerHTML = `
       <div class="cbox">
         <h4>${s.name} — ${s.info}</h4>
-        <p style="font-size:1.05rem;font-weight:600;color:var(--navy);margin-bottom:.4rem">🎵 ${s.notes}</p>
-        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem">Cifrado: ${s.cipher}</p>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">${acidentsLabel}</p>
+        <div style="margin-bottom:1rem">${notesCells}</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">
+          <strong>Notas reais:</strong> ${s.notes}
+        </p>
         <p>${s.detail}</p>
         <div class="tip">🙏 <strong>No Louvor:</strong> ${s.louvor}</div>
       </div>`;
@@ -521,10 +615,17 @@ const UI = (() => {
       </li>`;
     }).join('');
 
-    const advBtn = (isCurr && idx < MONTHS_DATA.length - 1)
-      ? `<button class="advance-btn" onclick="UI.advanceMonth()">
-           ✓ Concluir módulo e avançar para ${MONTHS_DATA[idx + 1].name}
-         </button>`
+    // Botão de solicitação — só aparece no módulo atual, 100% completo e ainda sem pedido pendente
+    const alreadyRequested = isCurr && Storage.hasAdvanceRequest(user.email);
+    const canRequest       = isCurr && pct === 100 && idx < MONTHS_DATA.length - 1;
+    const requestBlock = canRequest
+      ? alreadyRequested
+        ? `<div class="request-pending-block">
+             ⏳ Solicitação de avanço enviada ao professor. Aguarde a aprovação.
+           </div>`
+        : `<button class="request-advance-btn" onclick="UI.requestAdvance(${idx})">
+             📩 Solicitar avanço ao professor
+           </button>`
       : '';
 
     document.getElementById('monthDetailContent').innerHTML = `
@@ -550,7 +651,7 @@ const UI = (() => {
         <h4>📖 Base Teórica</h4>
         <p style="font-size:.82rem;color:var(--muted)">${m.pdfRef}</p>
       </div>
-      ${advBtn}`;
+      ${requestBlock}`;
 
     document.getElementById('jornadaGrid').style.display  = 'none';
     document.getElementById('monthDetail').style.display  = 'block';
@@ -576,20 +677,34 @@ const UI = (() => {
     const label = document.getElementById('detailProgressLabel');
     if (fill)  fill.style.width  = `${pct}%`;
     if (label) label.textContent = `${doneCount} de ${total} objetivos (${pct}%)`;
+
+    // Quando atingir 100%, exibir o botão de solicitação ao professor
+    const currIdx = Storage.getStudentMonth(user.email);
+    if (pct === 100 && monthIdx === currIdx && monthIdx < MONTHS_DATA.length - 1) {
+      const existing = document.querySelector('.request-advance-btn, .request-pending-block');
+      if (!existing) {
+        const alreadyReq = Storage.hasAdvanceRequest(user.email);
+        const block = document.createElement('div');
+        block.innerHTML = alreadyReq
+          ? `<div class="request-pending-block">⏳ Solicitação de avanço enviada ao professor. Aguarde a aprovação.</div>`
+          : `<button class="request-advance-btn" onclick="UI.requestAdvance(${monthIdx})">📩 Solicitar avanço ao professor</button>`;
+        document.getElementById('monthDetailContent').appendChild(block.firstElementChild);
+      }
+    }
   }
 
-  function advanceMonth() {
+  function requestAdvance(monthIdx) {
     const user = Auth.getCurrentUser();
-    const curr = Storage.getStudentMonth(user.email);
-    if (curr >= MONTHS_DATA.length - 1) return;
-    const next = curr + 1;
-    Storage.setStudentMonth(user.email, next);
-    closeMonthDetail();
-    // Re-hidrata as seções afetadas
-    _hydrateInicio(user);
-    _hydrateMiniTimeline(user);
-    _hydrateMonthsGrid(user);
-    alert(`🎉 Parabéns! Você avançou para: ${MONTHS_DATA[next].emoji} ${MONTHS_DATA[next].name}!`);
+    Storage.requestAdvance(user.email, user.name, monthIdx);
+
+    // Trocar botão pelo aviso de pendente
+    const btn = document.querySelector('.request-advance-btn');
+    if (btn) {
+      const pending = document.createElement('div');
+      pending.className = 'request-pending-block';
+      pending.textContent = '⏳ Solicitação enviada ao professor. Aguarde a aprovação.';
+      btn.replaceWith(pending);
+    }
   }
 
   // ── Checklist diário ─────────────────────────
@@ -640,19 +755,48 @@ const UI = (() => {
     <div id="page-professor" class="page">
       <div class="prof-header">
         <h2>Painel do Professor</h2>
-        <p>Gerencie o módulo de cada aluno. A mudança é imediata — no próximo login o aluno verá o novo conteúdo.</p>
+        <p>Gerencie os alunos e módulos. Só você decide quem avança.</p>
       </div>
+
       <div class="prof-stats" id="profStats"></div>
+
+      <!-- Solicitações de avanço pendentes -->
+      <div id="advanceRequestsSection"></div>
+
+      <!-- Cadastrar novo aluno -->
+      <div class="sec-title">➕ Cadastrar Aluno</div>
+      <div class="cbox">
+        <div class="add-student-form">
+          <div class="add-field">
+            <label>Nome</label>
+            <input type="text" id="newStudentName" placeholder="Nome completo">
+          </div>
+          <div class="add-field">
+            <label>Email</label>
+            <input type="email" id="newStudentEmail" placeholder="email@exemplo.com">
+          </div>
+          <div class="add-field">
+            <label>Módulo inicial</label>
+            <select id="newStudentMonth" class="month-select">
+              ${MONTHS_DATA.map((mo, i) => `<option value="${i}">${mo.name} — ${mo.tag}</option>`).join('')}
+            </select>
+          </div>
+          <button class="save-row-btn" onclick="UI.addStudent()">Cadastrar</button>
+        </div>
+        <div class="tip" style="margin-top:1rem">🔑 A senha de todos os alunos é <strong>aln321</strong>. Compartilhe com o aluno após cadastrá-lo.</div>
+      </div>
+
+      <!-- Tabela de alunos -->
       <div class="sec-title">👥 Alunos Cadastrados</div>
       <div class="cbox" style="padding:0;overflow:hidden">
-        <table class="students-table" id="studentsTable">
+        <table class="students-table">
           <thead>
             <tr>
               <th>Aluno</th>
               <th>Email</th>
               <th>Módulo Atual</th>
-              <th>Alterar</th>
-              <th></th>
+              <th>Alterar Módulo</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody id="studentsBody"></tbody>
@@ -663,20 +807,54 @@ const UI = (() => {
 
   function _hydrateProfessorPage() {
     const students = Storage.getStudents();
+    const requests = Storage.getAdvanceRequests();
+    const pendingCount = Object.keys(requests).length;
 
-    // Stats
-    const statsEl = document.getElementById('profStats');
+    // ── Stats ──
+    const statsEl  = document.getElementById('profStats');
     const avgMonth = students.length > 0
       ? (students.reduce((s, a) => s + Storage.getStudentMonth(a.email), 0) / students.length).toFixed(1)
       : 0;
     const inFinal = students.filter(s => Storage.getStudentMonth(s.email) >= 9).length;
     statsEl.innerHTML = `
-      <div class="prof-stat"><div class="prof-stat-num">${students.length}</div><div class="prof-stat-label">Total de Alunos</div></div>
+      <div class="prof-stat"><div class="prof-stat-num">${students.length}</div><div class="prof-stat-label">Alunos</div></div>
       <div class="prof-stat"><div class="prof-stat-num">${avgMonth}</div><div class="prof-stat-label">Módulo Médio</div></div>
-      <div class="prof-stat"><div class="prof-stat-num">${inFinal}</div><div class="prof-stat-label">No Projeto Final</div></div>
-      <div class="prof-stat"><div class="prof-stat-num">${MONTHS_DATA.length}</div><div class="prof-stat-label">Módulos do Curso</div></div>`;
+      <div class="prof-stat"><div class="prof-stat-num">${inFinal}</div><div class="prof-stat-label">Projeto Final</div></div>
+      <div class="prof-stat" style="${pendingCount > 0 ? 'border:2px solid var(--gold)' : ''}">
+        <div class="prof-stat-num" style="color:${pendingCount > 0 ? 'var(--warn)' : 'var(--muted)'}">${pendingCount}</div>
+        <div class="prof-stat-label">Solicitações</div>
+      </div>`;
 
-    // Tabela
+    // ── Solicitações pendentes ──
+    const reqSection = document.getElementById('advanceRequestsSection');
+    if (pendingCount > 0) {
+      const reqCards = Object.entries(requests).map(([email, req]) => {
+        const nextIdx = req.monthIdx + 1;
+        const curr    = MONTHS_DATA[req.monthIdx];
+        const next    = MONTHS_DATA[nextIdx];
+        return `
+        <div class="request-card">
+          <div class="request-info">
+            <div class="request-name">📩 ${req.name}</div>
+            <div class="request-detail">
+              Quer avançar de <strong>${curr.emoji} ${curr.name}</strong>
+              para <strong>${next ? next.emoji + ' ' + next.name : '—'}</strong>
+            </div>
+          </div>
+          <div class="request-actions">
+            <button class="req-approve-btn" onclick="UI.approveAdvance('${email}', ${req.monthIdx})">✓ Aprovar</button>
+            <button class="req-deny-btn"    onclick="UI.denyAdvance('${email}')">✗ Recusar</button>
+          </div>
+        </div>`;
+      }).join('');
+      reqSection.innerHTML = `
+        <div class="sec-title" style="color:var(--warn)">⏳ Solicitações Pendentes</div>
+        <div class="requests-list">${reqCards}</div>`;
+    } else {
+      reqSection.innerHTML = '';
+    }
+
+    // ── Tabela de alunos ──
     const tbody = document.getElementById('studentsBody');
     if (!students.length) {
       tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="ico">🎵</div><p>Nenhum aluno cadastrado ainda.</p></div></td></tr>`;
@@ -684,31 +862,32 @@ const UI = (() => {
     }
 
     tbody.innerHTML = students.map((s, rowIdx) => {
-      const mIdx = Storage.getStudentMonth(s.email);
-      const m    = MONTHS_DATA[mIdx];
-      const opts = MONTHS_DATA.map((mo, i) =>
+      const mIdx    = Storage.getStudentMonth(s.email);
+      const m       = MONTHS_DATA[mIdx];
+      const hasPending = !!requests[s.email];
+      const opts    = MONTHS_DATA.map((mo, i) =>
         `<option value="${i}" ${i === mIdx ? 'selected' : ''}>${mo.name} — ${mo.tag}</option>`
       ).join('');
       return `
       <tr>
         <td>
-          <div class="student-name">${s.name}</div>
+          <div class="student-name">
+            ${hasPending ? '<span style="color:var(--warn);margin-right:4px">⏳</span>' : ''}
+            ${s.name}
+          </div>
         </td>
+        <td><div class="student-email">${s.email}</div></td>
+        <td><span class="badge badge--gold">${m.emoji} ${m.name}</span></td>
         <td>
-          <div class="student-email">${s.email}</div>
-        </td>
-        <td>
-          <span class="badge badge--gold">${m.emoji} ${m.name}</span>
-        </td>
-        <td>
-          <select class="month-select" id="sel-${rowIdx}" data-email="${s.email}">
+          <select class="month-select" id="sel-${rowIdx}">
             ${opts}
           </select>
         </td>
-        <td>
-          <button class="save-row-btn" id="savebtn-${rowIdx}" onclick="UI.saveStudentMonth(${rowIdx}, '${s.email}')">
-            Salvar
-          </button>
+        <td style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="save-row-btn" id="savebtn-${rowIdx}"
+            onclick="UI.saveStudentMonth(${rowIdx}, '${s.email}')">Salvar</button>
+          <button class="save-row-btn" style="background:rgba(192,57,43,0.1);color:var(--danger)"
+            onclick="UI.removeStudent('${s.email}')">Remover</button>
         </td>
       </tr>`;
     }).join('');
@@ -720,16 +899,57 @@ const UI = (() => {
     if (!sel || !btn) return;
     const newIdx = parseInt(sel.value);
     Storage.setStudentMonth(email, newIdx);
-
-    // Feedback visual
+    // Se professor mudou manualmente, limpa qualquer solicitação pendente
+    Storage.clearAdvanceRequest(email);
     btn.textContent = '✓ Salvo!';
     btn.classList.add('saved');
     setTimeout(() => {
       btn.textContent = 'Salvar';
       btn.classList.remove('saved');
-      // Re-renderiza a tabela para atualizar o badge
       _hydrateProfessorPage();
-    }, 1800);
+    }, 1600);
+  }
+
+  function approveAdvance(email, currentMonthIdx) {
+    const next = currentMonthIdx + 1;
+    if (next >= MONTHS_DATA.length) return;
+    Storage.setStudentMonth(email, next);
+    Storage.clearAdvanceRequest(email);
+    _hydrateProfessorPage();
+  }
+
+  function denyAdvance(email) {
+    Storage.clearAdvanceRequest(email);
+    _hydrateProfessorPage();
+  }
+
+  function addStudent() {
+    const nameEl  = document.getElementById('newStudentName');
+    const emailEl = document.getElementById('newStudentEmail');
+    const monthEl = document.getElementById('newStudentMonth');
+    const name    = nameEl.value.trim();
+    const email   = emailEl.value.trim().toLowerCase();
+    const monthIdx = parseInt(monthEl.value);
+
+    if (!name)  { alert('Informe o nome do aluno.'); return; }
+    if (!email || !email.includes('@')) { alert('Informe um email válido.'); return; }
+    if (Storage.findStudent(email)) { alert('Este email já está cadastrado.'); return; }
+
+    Storage.upsertStudent({ email, name, monthIdx });
+    Storage.setStudentMonth(email, monthIdx);
+
+    nameEl.value  = '';
+    emailEl.value = '';
+    monthEl.value = '0';
+
+    _hydrateProfessorPage();
+  }
+
+  function removeStudent(email) {
+    if (!confirm(`Remover o aluno "${email}"?\nO progresso dele será mantido caso seja recadastrado.`)) return;
+    Storage.removeStudent(email);
+    Storage.clearAdvanceRequest(email);
+    _hydrateProfessorPage();
   }
 
   // API pública
@@ -739,13 +959,18 @@ const UI = (() => {
     initProfessor,
     refreshStreakDisplay,
     showScale,
+    switchCircuit,
     openMonthDetail,
     closeMonthDetail,
     toggleCheck,
-    advanceMonth,
+    requestAdvance,
     checkDay,
     alertPDF,
     saveStudentMonth,
+    approveAdvance,
+    denyAdvance,
+    addStudent,
+    removeStudent,
   };
 
 })();

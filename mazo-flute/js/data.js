@@ -7,6 +7,7 @@
 
 // ─── Credenciais ────────────────────────────────
 const CREDENTIALS = {
+  studentPassword: 'aln321',  // Senha única de todos os alunos
   professor: { login: 'Prof', password: 'Edu321', role: 'professor', name: 'Eduardo' },
 };
 
@@ -197,61 +198,151 @@ const MONTHS_DATA = [
 ];
 
 // ─── Escalas ────────────────────────────────────
+// ─── Circuito das Quintas e das Quartas ──────────
+// Quintas: a 5ª nota da escala anterior vira a 1ª da próxima. Cada nova escala ganha +1 sustenido.
+// Quartas: a 4ª nota da escala anterior vira a 1ª da próxima. Cada nova escala ganha +1 bemol.
+
+const CIRCLE_OF_FIFTHS = [
+  { key: 'C',  name: 'Dó',   sharps: 0, label: 'C  (natural)' },
+  { key: 'G',  name: 'Sol',  sharps: 1, label: 'G  (1#)' },
+  { key: 'D',  name: 'Ré',   sharps: 2, label: 'D  (2#)' },
+  { key: 'A',  name: 'Lá',   sharps: 3, label: 'A  (3#)' },
+  { key: 'E',  name: 'Mi',   sharps: 4, label: 'E  (4#)' },
+  { key: 'B',  name: 'Si',   sharps: 5, label: 'B  (5#)' },
+  { key: 'F#', name: 'Fá#',  sharps: 6, label: 'F# (6#)' },
+];
+
+const CIRCLE_OF_FOURTHS = [
+  { key: 'F',  name: 'Fá',   flats: 1, label: 'F  (1♭)' },
+  { key: 'Bb', name: 'Si♭',  flats: 2, label: 'B♭ (2♭)' },
+  { key: 'Eb', name: 'Mi♭',  flats: 3, label: 'E♭ (3♭)' },
+  { key: 'Ab', name: 'Lá♭',  flats: 4, label: 'A♭ (4♭)' },
+  { key: 'Db', name: 'Ré♭',  flats: 5, label: 'D♭ (5♭)' },
+  { key: 'Gb', name: 'Sol♭', flats: 6, label: 'G♭ (6♭)' },
+  { key: 'Cb', name: 'Dó♭',  flats: 7, label: 'C♭ (7♭)' },
+];
+
 const SCALES_DATA = [
+
+  // ════════════════════════════════
+  //   CIRCUITO DAS QUINTAS (#)
+  // ════════════════════════════════
+
   {
-    key: 'C', name: 'Dó', info: 'C Maior (Natural)',
-    notes: 'Dó · Ré · Mi · Fá · Sol · Lá · Si · Dó',
-    cipher: 'C · D · E · F · G · A · B · C',
-    detail: 'A escala mais fundamental — sem acidentes. Todos os dedos seguem padrão natural. Comece sempre por ela. Toque com afinação perfeita e sonoridade uniforme em todas as oitavas.',
-    louvor: 'Pouco usada em louvor diretamente',
+    key: 'C', name: 'Dó', circuit: 'fifths', info: 'C Maior — Natural (0 acidentes)',
+    notes:  'Dó · Ré · Mi · Fá · Sol · Lá · Si · Dó',
+    cipher: 'C  · D  · E  · F  · G   · A  · B  · C',
+    sharps: '—',
+    detail: 'Ponto de partida do Circuito das Quintas. Sem acidentes — todos os dedos em posição natural. Domine esta escala antes de qualquer outra. A 5ª nota (Sol) será a raiz da próxima escala.',
+    louvor: 'Base do estudo — ponto de partida',
   },
   {
-    key: 'G', name: 'Sol', info: 'G Maior (1#)',
-    notes: 'Sol · Lá · Si · Dó · Ré · Mi · Fá# · Sol',
-    cipher: 'G · A · B · C · D · E · F# · G',
-    detail: 'Muito comum em louvor. Atenção ao Fá# — seu dedilhado difere do Fá natural. Pratique o Fá# isoladamente até dominar antes de tocar a escala completa.',
+    key: 'G', name: 'Sol', circuit: 'fifths', info: 'G Maior — 1 sustenido',
+    notes:  'Sol · Lá · Si  · Dó · Ré · Mi  · Fá# · Sol',
+    cipher: 'G   · A  · B   · C  · D  · E   · F#  · G',
+    sharps: 'Fá#',
+    detail: 'Primeira escala do circuito. A última nota é sempre sustenida: Fá#. A 5ª nota (Ré) será a raiz da próxima. Muito comum em louvor — domine o Fá# isoladamente antes de tocar a escala completa.',
     louvor: '⭐ Muito usada em louvor',
   },
   {
-    key: 'D', name: 'Ré', info: 'D Maior (2#)',
-    notes: 'Ré · Mi · Fá# · Sol · Lá · Si · Dó# · Ré',
-    cipher: 'D · E · F# · G · A · B · C# · D',
-    detail: 'Dois sustenidos: Fá# e Dó#. Frequente em músicas contemporâneas de louvor. Treine o Dó# lentamente até fluidez total — ele aparece na 3ª oitava também.',
+    key: 'D', name: 'Ré', circuit: 'fifths', info: 'D Maior — 2 sustenidos',
+    notes:  'Ré · Mi  · Fá# · Sol · Lá · Si  · Dó# · Ré',
+    cipher: 'D  · E   · F#  · G   · A  · B   · C#  · D',
+    sharps: 'Fá# · Dó#',
+    detail: 'A nova nota sustenida é Dó#. A 5ª nota (Lá) será a raiz da próxima escala. O Dó# aparece na 3ª oitava — treine-o especialmente. Frequente em louvor contemporâneo.',
     louvor: '⭐ Usada em louvor',
   },
   {
-    key: 'A', name: 'Lá', info: 'A Maior (3#)',
-    notes: 'Lá · Si · Dó# · Ré · Mi · Fá# · Sol# · Lá',
-    cipher: 'A · B · C# · D · E · F# · G# · A',
-    detail: 'Três sustenidos: Fá#, Dó# e Sol#. Exige atenção especial na 3ª oitava. Grave-se e compare com afinador — os sustenidos agudos tendem a desafinar.',
+    key: 'A', name: 'Lá', circuit: 'fifths', info: 'A Maior — 3 sustenidos',
+    notes:  'Lá · Si  · Dó# · Ré · Mi  · Fá# · Sol# · Lá',
+    cipher: 'A  · B   · C#  · D  · E   · F#  · G#   · A',
+    sharps: 'Fá# · Dó# · Sol#',
+    detail: 'Nova nota: Sol#. A 5ª nota (Mi) será a raiz da próxima. Exige atenção na 3ª oitava — os sustenidos agudos tendem a desafinar. Use afinador de referência.',
     louvor: 'Moderadamente usada',
   },
   {
-    key: 'F', name: 'Fá', info: 'F Maior (1♭)',
-    notes: 'Fá · Sol · Lá · Si♭ · Dó · Ré · Mi · Fá',
-    cipher: 'F · G · A · B♭ · C · D · E · F',
-    detail: 'Um bemol: Si♭. Usada em hinos tradicionais. O Si♭ tem dedilhado próprio — pratique separadamente até ser natural. Muito presente na música sacra clássica.',
+    key: 'E', name: 'Mi', circuit: 'fifths', info: 'E Maior — 4 sustenidos',
+    notes:  'Mi  · Fá# · Sol# · Lá · Si  · Dó# · Ré# · Mi',
+    cipher: 'E   · F#  · G#   · A  · B   · C#  · D#  · E',
+    sharps: 'Fá# · Dó# · Sol# · Ré#',
+    detail: 'Nova nota: Ré#. A 5ª nota (Si) será a raiz da próxima. Quatro sustenidos exigem memória muscular sólida. Pratique lentamente e grave para verificar afinação.',
+    louvor: 'Pouco usada em louvor',
+  },
+  {
+    key: 'B', name: 'Si', circuit: 'fifths', info: 'B Maior — 5 sustenidos',
+    notes:  'Si  · Dó# · Ré# · Mi  · Fá# · Sol# · Lá# · Si',
+    cipher: 'B   · C#  · D#  · E   · F#  · G#   · A#  · B',
+    sharps: 'Fá# · Dó# · Sol# · Ré# · Lá#',
+    detail: 'Nova nota: Lá#. A 5ª nota (Fá#) será a raiz da próxima. Cinco sustenidos — escala avançada. Enarmônica de Dó♭ (7 bemóis). Pratique cada sustenido isoladamente.',
+    louvor: 'Avançada — raramente em louvor',
+  },
+  {
+    key: 'Fs', name: 'Fá#', circuit: 'fifths', info: 'F# Maior — 6 sustenidos',
+    notes:  'Fá# · Sol# · Lá# · Si  · Dó# · Ré# · Mi# · Fá#',
+    cipher: 'F#  · G#   · A#  · B   · C#  · D#  · E#  · F#',
+    sharps: 'Fá# · Dó# · Sol# · Ré# · Lá# · Mi#',
+    detail: 'Nova nota: Mi# (enarmônico de Fá). Seis sustenidos — a escala mais densa do circuito. Enarmônica de Sol♭ (6 bemóis). Use para treino avançado de memória e afinação.',
+    louvor: 'Avançada — estudo técnico',
+  },
+
+  // ════════════════════════════════
+  //   CIRCUITO DAS QUARTAS (♭)
+  // ════════════════════════════════
+
+  {
+    key: 'F', name: 'Fá', circuit: 'fourths', info: 'F Maior — 1 bemol',
+    notes:  'Fá · Sol · Lá · Si♭ · Dó · Ré · Mi · Fá',
+    cipher: 'F  · G   · A  · B♭  · C  · D  · E  · F',
+    flats: 'Si♭',
+    detail: 'Ponto de partida do Circuito das Quartas. A 4ª nota (Si♭) é sempre bemolizada. A 4ª nota (Si♭) será a raiz da próxima escala. Muito presente na música sacra clássica.',
     louvor: '⭐ Usada em hinos tradicionais',
   },
   {
-    key: 'Bb', name: 'Si♭', info: 'B♭ Maior (2♭)',
-    notes: 'Si♭ · Dó · Ré · Mi♭ · Fá · Sol · Lá · Si♭',
-    cipher: 'B♭ · C · D · E♭ · F · G · A · B♭',
-    detail: '🎯 A TONALIDADE MAIS COMUM NO LOUVOR! Si♭ e Mi♭. Memorize prioritariamente. Quando o maestro diz "está em Si♭", é essa escala. Essencial para qualquer flautista.',
+    key: 'Bb', name: 'Si♭', circuit: 'fourths', info: 'B♭ Maior — 2 bemóis',
+    notes:  'Si♭ · Dó · Ré · Mi♭ · Fá · Sol · Lá · Si♭',
+    cipher: 'B♭  · C  · D  · E♭  · F  · G   · A  · B♭',
+    flats: 'Si♭ · Mi♭',
+    detail: '🎯 A TONALIDADE MAIS COMUM NO LOUVOR! Quando o maestro diz "está em Si♭", é essa escala. A 4ª nota (Mi♭) será a raiz da próxima. Memorize prioritariamente.',
     louvor: '🎯 A mais importante do louvor!',
   },
   {
-    key: 'Eb', name: 'Mi♭', info: 'E♭ Maior (3♭)',
-    notes: 'Mi♭ · Fá · Sol · Lá♭ · Si♭ · Dó · Ré · Mi♭',
-    cipher: 'E♭ · F · G · A♭ · B♭ · C · D · E♭',
-    detail: 'Três bemóis: Si♭, Mi♭ e Lá♭. Aparece bastante em arranjos mais elaborados de louvor. Controle a afinação nos bemóis da 3ª oitava — eles tendem a cair.',
+    key: 'Eb', name: 'Mi♭', circuit: 'fourths', info: 'E♭ Maior — 3 bemóis',
+    notes:  'Mi♭ · Fá · Sol · Lá♭ · Si♭ · Dó · Ré · Mi♭',
+    cipher: 'E♭  · F  · G   · A♭  · B♭  · C  · D  · E♭',
+    flats: 'Si♭ · Mi♭ · Lá♭',
+    detail: 'Nova nota: Lá♭. A 4ª nota (Lá♭) será a raiz da próxima. Segunda tonalidade mais usada no louvor. Controle a afinação nos bemóis agudos — eles tendem a cair.',
     louvor: '⭐⭐ Segunda mais usada no louvor',
   },
   {
-    key: 'Am', name: 'Lá m', info: 'A menor natural',
-    notes: 'Lá · Si · Dó · Ré · Mi · Fá · Sol · Lá',
-    cipher: 'A · B · C · D · E · F · G · A',
-    detail: 'Relativa de Dó Maior — mesmas notas, começando em Lá. Caráter mais introspectivo e emotivo. Ótima para desenvolver sensibilidade de frase musical em louvores contemplativos.',
-    louvor: 'Louvores contemplativos',
+    key: 'Ab', name: 'Lá♭', circuit: 'fourths', info: 'A♭ Maior — 4 bemóis',
+    notes:  'Lá♭ · Si♭ · Dó · Ré♭ · Mi♭ · Fá · Sol · Lá♭',
+    cipher: 'A♭  · B♭  · C  · D♭  · E♭  · F  · G   · A♭',
+    flats: 'Si♭ · Mi♭ · Lá♭ · Ré♭',
+    detail: 'Nova nota: Ré♭. A 4ª nota (Ré♭) será a raiz da próxima. Aparece em arranjos mais elaborados. Com 4 bemóis, exige boa memória muscular — pratique devagar e com metrônomo.',
+    louvor: 'Arranjos elaborados',
+  },
+  {
+    key: 'Db', name: 'Ré♭', circuit: 'fourths', info: 'D♭ Maior — 5 bemóis',
+    notes:  'Ré♭ · Mi♭ · Fá · Sol♭ · Lá♭ · Si♭ · Dó · Ré♭',
+    cipher: 'D♭  · E♭  · F  · G♭   · A♭  · B♭  · C  · D♭',
+    flats: 'Si♭ · Mi♭ · Lá♭ · Ré♭ · Sol♭',
+    detail: 'Nova nota: Sol♭. A 4ª nota (Sol♭) será a raiz da próxima. Enarmônica de Dó# (7 sustenidos). Cinco bemóis — escala avançada. Grave-se para verificar cada nota.',
+    louvor: 'Avançada — estudo técnico',
+  },
+  {
+    key: 'Gb', name: 'Sol♭', circuit: 'fourths', info: 'G♭ Maior — 6 bemóis',
+    notes:  'Sol♭ · Lá♭ · Si♭ · Dó♭ · Ré♭ · Mi♭ · Fá · Sol♭',
+    cipher: 'G♭   · A♭  · B♭  · C♭  · D♭  · E♭  · F  · G♭',
+    flats: 'Si♭ · Mi♭ · Lá♭ · Ré♭ · Sol♭ · Dó♭',
+    detail: 'Nova nota: Dó♭ (enarmônico de Si). Seis bemóis — enarmônica de Fá# (6 sustenidos). A 4ª nota (Dó♭) será a raiz da próxima. Escala de alto nível técnico.',
+    louvor: 'Avançada — estudo técnico',
+  },
+  {
+    key: 'Cb', name: 'Dó♭', circuit: 'fourths', info: 'C♭ Maior — 7 bemóis',
+    notes:  'Dó♭ · Ré♭ · Mi♭ · Fá♭ · Sol♭ · Lá♭ · Si♭♭ · Dó♭',
+    cipher: 'C♭  · D♭  · E♭  · F♭  · G♭   · A♭  · B♭♭  · C♭',
+    flats: 'Si♭ · Mi♭ · Lá♭ · Ré♭ · Sol♭ · Dó♭ · Fá♭',
+    detail: 'Sete bemóis — a escala mais densa do circuito. Enarmônica de Si Maior (5 sustenidos). Fá♭ é enarmônico de Mi. Escala de estudo avançado — raramente usada na prática.',
+    louvor: 'Avançada — raramente usada',
   },
 ];

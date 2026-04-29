@@ -595,3 +595,161 @@
   .hero-block h1 { font-size: 1.6rem; }
   .prof-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* =============================================
+   ADDITIONS — Escalas, Solicitações, Cadastro
+   ============================================= */
+
+/* ---- Circuit Tabs (Quintas / Quartas) ---- */
+.circuit-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+.circuit-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: var(--white);
+  border: 2px solid var(--cream2);
+  border-radius: var(--radius);
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s;
+}
+.circuit-tab:hover  { border-color: var(--gold); color: var(--navy); }
+.circuit-tab.active { border-color: var(--gold); background: linear-gradient(135deg, var(--white), rgba(201,169,110,0.06)); color: var(--navy); box-shadow: 0 4px 16px rgba(201,169,110,0.15); }
+
+/* ---- Scale box step label ---- */
+.sc-step {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+/* ---- Request Block (aluno) ---- */
+.request-advance-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold3) 100%);
+  color: var(--navy);
+  font-family: var(--ff-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: block;
+}
+.request-advance-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(201,169,110,0.3); }
+
+.request-pending-block {
+  margin-top: 1.5rem;
+  padding: 14px 18px;
+  background: rgba(212,134,10,0.08);
+  border: 1px solid rgba(212,134,10,0.3);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--warn);
+  text-align: center;
+}
+
+/* ---- Request Cards (professor) ---- */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.request-card {
+  background: var(--white);
+  border: 2px solid rgba(212,134,10,0.3);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 4px 16px rgba(212,134,10,0.08);
+  flex-wrap: wrap;
+}
+.request-name   { font-weight: 700; font-size: 0.95rem; color: var(--navy); }
+.request-detail { font-size: 0.83rem; color: var(--muted); margin-top: 3px; }
+.request-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.req-approve-btn {
+  padding: 8px 16px;
+  background: rgba(61,139,110,0.12);
+  border: 1px solid rgba(61,139,110,0.3);
+  border-radius: 8px;
+  color: var(--success);
+  font-family: var(--ff-body);
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.req-approve-btn:hover { background: var(--success); color: white; }
+
+.req-deny-btn {
+  padding: 8px 16px;
+  background: rgba(192,57,43,0.08);
+  border: 1px solid rgba(192,57,43,0.25);
+  border-radius: 8px;
+  color: var(--danger);
+  font-family: var(--ff-body);
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.req-deny-btn:hover { background: var(--danger); color: white; }
+
+/* ---- Add Student Form ---- */
+.add-student-form {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.add-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+}
+.add-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.add-field input {
+  padding: 10px 14px;
+  border: 1px solid var(--cream3);
+  border-radius: 8px;
+  font-family: var(--ff-body);
+  font-size: 0.88rem;
+  color: var(--navy);
+  background: var(--cream);
+  transition: border-color 0.2s;
+}
+.add-field input:focus { outline: none; border-color: var(--gold); }
+
+@media (max-width: 600px) {
+  .circuit-tabs { flex-direction: column; }
+  .request-card { flex-direction: column; align-items: flex-start; }
+  .add-student-form { flex-direction: column; }
+  .add-field { min-width: 100%; }
+}

@@ -14,6 +14,7 @@ const Storage = (() => {
     checklist:    (email, mIdx) => `mf_ck_${email}_${mIdx}`,
     streak:       (email) => `mf_streak_${email}`,
     initialized:  () => 'mf_initialized',
+    advanceReqs:  () => 'mf_advance_requests',
   };
 
   // ── Helpers internos ──────────────────────────
@@ -35,7 +36,6 @@ const Storage = (() => {
   // ── Sessão ────────────────────────────────────
 
   function saveSession(sessionObj) {
-    // sessionObj: { email, name, role }
     _set(KEYS.session(), sessionObj);
   }
 
@@ -47,12 +47,13 @@ const Storage = (() => {
     _remove(KEYS.session());
   }
 
-  // ── Alunos (lista gerenciada pelo professor) ──
+  // ── Alunos ────────────────────────────────────
+  // Lista gerenciada exclusivamente pelo professor.
+  // Nenhum aluno entra sem estar aqui.
 
   function initStudents() {
     if (_get(KEYS.initialized())) return;
     _set(KEYS.students(), DEMO_STUDENTS);
-    // Persiste o mês de cada aluno demo
     DEMO_STUDENTS.forEach(s => {
       _set(KEYS.monthIdx(s.email), s.monthIdx);
     });
@@ -63,12 +64,21 @@ const Storage = (() => {
     return _get(KEYS.students()) || [];
   }
 
+  // Retorna o aluno pelo email, ou null se não cadastrado
+  function findStudent(email) {
+    return getStudents().find(s => s.email === email) || null;
+  }
+
   function upsertStudent(studentObj) {
-    // studentObj: { email, name, monthIdx }
     const students = getStudents();
     const idx = students.findIndex(s => s.email === studentObj.email);
     if (idx >= 0) students[idx] = { ...students[idx], ...studentObj };
     else students.push(studentObj);
+    _set(KEYS.students(), students);
+  }
+
+  function removeStudent(email) {
+    const students = getStudents().filter(s => s.email !== email);
     _set(KEYS.students(), students);
   }
 
@@ -81,7 +91,6 @@ const Storage = (() => {
 
   function setStudentMonth(email, monthIdx) {
     _set(KEYS.monthIdx(email), monthIdx);
-    // Atualiza também na lista de alunos
     upsertStudent({ email, monthIdx });
   }
 
@@ -110,15 +119,28 @@ const Storage = (() => {
     return newStreak;
   }
 
-  // ── Registro de aluno no login ───────────────
+  // ── Solicitações de avanço de módulo ─────────
+  // Estrutura: { [email]: { name, monthIdx, requestedAt } }
+  // O aluno solicita → o professor aprova ou ignora.
 
-  function ensureStudentExists(email, name) {
-    const students = getStudents();
-    const exists = students.find(s => s.email === email);
-    if (!exists) {
-      upsertStudent({ email, name, monthIdx: 0 });
-      setStudentMonth(email, 0);
-    }
+  function getAdvanceRequests() {
+    return _get(KEYS.advanceReqs()) || {};
+  }
+
+  function requestAdvance(email, name, monthIdx) {
+    const reqs = getAdvanceRequests();
+    reqs[email] = { name, monthIdx, requestedAt: new Date().toISOString() };
+    _set(KEYS.advanceReqs(), reqs);
+  }
+
+  function hasAdvanceRequest(email) {
+    return !!getAdvanceRequests()[email];
+  }
+
+  function clearAdvanceRequest(email) {
+    const reqs = getAdvanceRequests();
+    delete reqs[email];
+    _set(KEYS.advanceReqs(), reqs);
   }
 
   // API pública
@@ -128,14 +150,19 @@ const Storage = (() => {
     getSession,
     clearSession,
     getStudents,
+    findStudent,
     upsertStudent,
+    removeStudent,
     getStudentMonth,
     setStudentMonth,
     getChecklist,
     setChecklistItem,
     getStreak,
     incrementStreak,
-    ensureStudentExists,
+    getAdvanceRequests,
+    requestAdvance,
+    hasAdvanceRequest,
+    clearAdvanceRequest,
   };
 
 })();
