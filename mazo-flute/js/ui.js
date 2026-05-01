@@ -913,7 +913,7 @@ const UI = (() => {
     await Storage.clearAdvanceRequest(email);
     btn.textContent = '✓ Salvo!';
     btn.classList.add('saved');
-    setTimeout(() => {
+    setTimeout(async () => {
       btn.textContent = 'Salvar';
       btn.classList.remove('saved');
       await _hydrateProfessorPage();
