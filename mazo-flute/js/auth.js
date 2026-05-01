@@ -1,17 +1,15 @@
 /* =============================================
-   auth.js — Autenticação (aluno e professor).
-   - Professor: login "Prof" + senha "Edu321"
-   - Aluno: email cadastrado pelo professor +
-     senha definida pelo professor no cadastro.
+   auth.js — Autenticação com Firestore.
+   Professor: login "Prof" + senha "Edu321"
+   Aluno: email cadastrado + senha individual
+          definida pelo professor no painel.
    ============================================= */
 
 'use strict';
 
 const Auth = (() => {
 
-  let _currentUser = null; // { email, name, role }
-
-  // ── Getters ───────────────────────────────────
+  let _currentUser = null;
 
   function getCurrentUser() { return _currentUser; }
   function isLoggedIn()     { return _currentUser !== null; }
@@ -19,38 +17,52 @@ const Auth = (() => {
 
   // ── Login ─────────────────────────────────────
 
-  function attemptLogin(loginValue, password) {
+  async function attemptLogin(loginValue, password) {
     const errEl = document.getElementById('loginErr');
+    const btn   = document.getElementById('loginSubmitBtn');
     errEl.textContent = '';
 
     if (!loginValue || !password) {
       errEl.textContent = 'Preencha todos os campos.';
-      return false;
+      return;
     }
 
-    // 1. Professor
-    const prof = CREDENTIALS.professor;
-    if (loginValue === prof.login && password === prof.password) {
-      return _startSession({ email: prof.login, name: prof.name, role: 'professor' });
-    }
+    // Feedback de carregamento
+    btn.textContent = 'Entrando...';
+    btn.disabled = true;
 
-    // 2. Aluno — busca pelo email na lista do professor
-    const student = Storage.findStudent(loginValue.toLowerCase().trim());
-    if (!student) {
-      errEl.textContent = 'Email não encontrado. Fale com o professor.';
-      return false;
-    }
+    try {
+      // 1. Professor
+      const prof = CREDENTIALS.professor;
+      if (loginValue === prof.login && password === prof.password) {
+        await _startSession({ email: prof.login, name: prof.name, role: 'professor' });
+        return;
+      }
 
-    // 3. Valida a senha individual do aluno
-    if (student.password !== password) {
-      errEl.textContent = 'Senha incorreta.';
-      return false;
-    }
+      // 2. Aluno — busca no Firestore
+      const student = await Storage.findStudent(loginValue.toLowerCase().trim());
+      if (!student) {
+        errEl.textContent = 'Email não encontrado. Fale com o professor.';
+        return;
+      }
 
-    return _startSession({ email: student.email, name: student.name, role: 'student' });
+      if (student.password !== password) {
+        errEl.textContent = 'Senha incorreta.';
+        return;
+      }
+
+      await _startSession({ email: student.email, name: student.name, role: 'student' });
+
+    } catch (err) {
+      console.error(err);
+      errEl.textContent = 'Erro de conexão. Verifique sua internet.';
+    } finally {
+      btn.textContent = 'Entrar';
+      btn.disabled = false;
+    }
   }
 
-  function _startSession(user) {
+  async function _startSession(user) {
     _currentUser = user;
     Storage.saveSession(user);
 
@@ -58,12 +70,10 @@ const Auth = (() => {
     document.getElementById('app').classList.add('visible');
 
     if (user.role === 'professor') {
-      UI.initProfessor(user);
+      await UI.initProfessor(user);
     } else {
-      UI.initStudent(user);
+      await UI.initStudent(user);
     }
-
-    return true;
   }
 
   // ── Logout ────────────────────────────────────
@@ -71,14 +81,11 @@ const Auth = (() => {
   function logout() {
     _currentUser = null;
     Storage.clearSession();
-
     document.getElementById('app').classList.remove('visible');
     document.getElementById('loginScreen').classList.remove('out');
-
     document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
     document.getElementById('loginErr').textContent = '';
-
     document.querySelectorAll('.login-tab').forEach((t, i) => {
       t.classList.toggle('active', i === 0);
     });
@@ -87,15 +94,15 @@ const Auth = (() => {
 
   // ── Sessão persistida ─────────────────────────
 
-  function checkPersistedSession() {
+  async function checkPersistedSession() {
     const session = Storage.getSession();
     if (!session) return;
-    // Revalida: professor ok, aluno precisa ainda estar cadastrado
-    if (session.role === 'student' && !Storage.findStudent(session.email)) {
-      Storage.clearSession();
-      return;
+    // Revalida aluno no Firestore
+    if (session.role === 'student') {
+      const student = await Storage.findStudent(session.email);
+      if (!student) { Storage.clearSession(); return; }
     }
-    _startSession(session);
+    await _startSession(session);
   }
 
   // ── Formulários ───────────────────────────────
@@ -114,7 +121,6 @@ const Auth = (() => {
     document.getElementById('loginDemoNote').style.display = 'none';
   }
 
-  // API pública
   return {
     attemptLogin,
     logout,

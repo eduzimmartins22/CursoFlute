@@ -52,7 +52,7 @@
 
         <p class="login-err" id="loginErr"></p>
 
-        <button class="login-btn"
+        <button class="login-btn" id="loginSubmitBtn"
           onclick="Auth.attemptLogin(document.getElementById('loginUser').value.trim(), document.getElementById('loginPass').value)">
           Entrar
         </button>
@@ -108,6 +108,12 @@
        5. ui        (renderização)
        6. main      (bootstrap)
   ════════════════════════════════════════════ -->
+  <!-- Firebase SDK (compat — sem bundler) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <!-- App — ordem importa -->
+  <script src="js/firebase.js"></script>
   <script src="js/data.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/auth.js"></script>

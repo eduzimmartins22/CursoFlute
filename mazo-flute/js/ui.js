@@ -9,18 +9,18 @@ const UI = (() => {
 
   // ── Inicialização por papel ───────────────────
 
-  function initStudent(user) {
+  async function initStudent(user) {
     _setHeader(user);
     _buildStudentNav();
-    _buildAllPages(user);
+    await _buildAllPages(user);
     goPage('inicio');
     Timer.init();
   }
 
-  function initProfessor(user) {
+  async function initProfessor(user) {
     _setHeader(user);
     _buildProfessorNav();
-    _buildProfessorPage();
+    await _buildProfessorPage();
     goPage('professor');
   }
 
@@ -71,7 +71,7 @@ const UI = (() => {
 
   // ── Build all student pages ───────────────────
 
-  function _buildAllPages(user) {
+  async function _buildAllPages(user) {
     const container = document.getElementById('pagesContainer');
     container.innerHTML =
       _tplPageInicio(user)   +
@@ -83,10 +83,10 @@ const UI = (() => {
       _tplPageTimer();
 
     // Hidrate componentes dinâmicos
-    _hydrateInicio(user);
-    _hydrateMiniTimeline(user);
-    _hydrateMonthsGrid(user);
-    _hydrateScales();
+    await _hydrateInicio(user);
+    await _hydrateMiniTimeline(user);
+    await _hydrateMonthsGrid(user);
+    await _hydrateScales();
   }
 
   // ── Refresh público (chamado por outros módulos) ──
@@ -426,18 +426,18 @@ const UI = (() => {
   //   HYDRATION — injeta dados nos templates
   // ══════════════════════════════════════════════
 
-  function _hydrateInicio(user) {
-    const mIdx   = Storage.getStudentMonth(user.email);
+  async function _hydrateInicio(user) {
+    const mIdx   = await Storage.getStudentMonth(user.email);
     const m      = MONTHS_DATA[mIdx];
-    const streak = Storage.getStreak(user.email);
+    const streak = await Storage.getStreak(user.email);
 
     document.getElementById('cardMesAtual').textContent  = `${m.emoji} ${m.name} — ${m.tag}`;
     document.getElementById('cardStreak').textContent    = `${streak} dias`;
     document.getElementById('cardConcluidos').textContent = `${mIdx} / ${MONTHS_DATA.length}`;
   }
 
-  function _hydrateMiniTimeline(user) {
-    const mIdx = Storage.getStudentMonth(user.email);
+  async function _hydrateMiniTimeline(user) {
+    const mIdx = await Storage.getStudentMonth(user.email);
     const tl   = document.getElementById('miniTimeline');
     if (!tl) return;
     tl.innerHTML = MONTHS_DATA.map((m, i) => {
@@ -457,8 +457,8 @@ const UI = (() => {
     }).join('');
   }
 
-  function _hydrateMonthsGrid(user) {
-    const mIdx = Storage.getStudentMonth(user.email);
+  async function _hydrateMonthsGrid(user) {
+    const mIdx = await Storage.getStudentMonth(user.email);
     const grid = document.getElementById('monthsGrid');
     if (!grid) return;
     grid.innerHTML = MONTHS_DATA.map((m, i) => {
@@ -484,13 +484,13 @@ const UI = (() => {
 
   let _activeCircuit = 'fifths';
 
-  function _hydrateScales() {
+  async function _hydrateScales() {
     switchCircuit('fifths', document.querySelector('.circuit-tab'));
   }
 
   // ── Escalas ───────────────────────────────────
 
-  function switchCircuit(circuit, tabEl) {
+  async function switchCircuit(circuit, tabEl) {
     _activeCircuit = circuit;
 
     // Atualizar tabs
@@ -587,11 +587,11 @@ const UI = (() => {
 
   // ── Month Detail ──────────────────────────────
 
-  function openMonthDetail(idx) {
+  async function openMonthDetail(idx) {
     const m       = MONTHS_DATA[idx];
     const user    = Auth.getCurrentUser();
-    const mIdx    = Storage.getStudentMonth(user.email);
-    const saved   = Storage.getChecklist(user.email, idx);
+    const mIdx    = await Storage.getStudentMonth(user.email);
+    const saved   = await Storage.getChecklist(user.email, idx);
     const isDone  = idx < mIdx;
     const isCurr  = idx === mIdx;
 
@@ -616,7 +616,7 @@ const UI = (() => {
     }).join('');
 
     // Botão de solicitação — só aparece no módulo atual, 100% completo e ainda sem pedido pendente
-    const alreadyRequested = isCurr && Storage.hasAdvanceRequest(user.email);
+    const alreadyRequested = isCurr && await Storage.hasAdvanceRequest(user.email);
     const canRequest       = isCurr && pct === 100 && idx < MONTHS_DATA.length - 1;
     const requestBlock = canRequest
       ? alreadyRequested
@@ -662,9 +662,9 @@ const UI = (() => {
     document.getElementById('jornadaGrid').style.display  = 'block';
   }
 
-  function toggleCheck(monthIdx, objIdx, el) {
+  async function toggleCheck(monthIdx, objIdx, el) {
     const user  = Auth.getCurrentUser();
-    const saved = Storage.setChecklistItem(user.email, monthIdx, objIdx, el.checked);
+    const saved = await Storage.setChecklistItem(user.email, monthIdx, objIdx, el.checked);
 
     // Atualizar classe do item
     el.closest('li').className = el.checked ? 'done-item' : '';
@@ -679,11 +679,11 @@ const UI = (() => {
     if (label) label.textContent = `${doneCount} de ${total} objetivos (${pct}%)`;
 
     // Quando atingir 100%, exibir o botão de solicitação ao professor
-    const currIdx = Storage.getStudentMonth(user.email);
+    const currIdx = await Storage.getStudentMonth(user.email);
     if (pct === 100 && monthIdx === currIdx && monthIdx < MONTHS_DATA.length - 1) {
       const existing = document.querySelector('.request-advance-btn, .request-pending-block');
       if (!existing) {
-        const alreadyReq = Storage.hasAdvanceRequest(user.email);
+        const alreadyReq = await Storage.hasAdvanceRequest(user.email);
         const block = document.createElement('div');
         block.innerHTML = alreadyReq
           ? `<div class="request-pending-block">⏳ Solicitação de avanço enviada ao professor. Aguarde a aprovação.</div>`
@@ -693,9 +693,9 @@ const UI = (() => {
     }
   }
 
-  function requestAdvance(monthIdx) {
+  async function requestAdvance(monthIdx) {
     const user = Auth.getCurrentUser();
-    Storage.requestAdvance(user.email, user.name, monthIdx);
+    await Storage.requestAdvance(user.email, user.name, monthIdx);
 
     // Trocar botão pelo aviso de pendente
     const btn = document.querySelector('.request-advance-btn');
@@ -709,14 +709,14 @@ const UI = (() => {
 
   // ── Checklist diário ─────────────────────────
 
-  function checkDay() {
+  async function checkDay() {
     const all = ['dc1','dc2','dc3','dc4'].every(id => {
       const el = document.getElementById(id);
       return el && el.checked;
     });
     if (all) {
       const user   = Auth.getCurrentUser();
-      const streak = Storage.incrementStreak(user.email);
+      const streak = await Storage.incrementStreak(user.email);
       refreshStreakDisplay(streak);
       alert(`🔥 Sessão completa! Parabéns!\nSequência: ${streak} dias.`);
     }
@@ -744,10 +744,10 @@ const UI = (() => {
   //   PROFESSOR PANEL
   // ══════════════════════════════════════════════
 
-  function _buildProfessorPage() {
+  async function _buildProfessorPage() {
     const container = document.getElementById('pagesContainer');
     container.innerHTML = _tplProfessorPage();
-    _hydrateProfessorPage();
+    await _hydrateProfessorPage();
   }
 
   function _tplProfessorPage() {
@@ -809,17 +809,17 @@ const UI = (() => {
     </div>`;
   }
 
-  function _hydrateProfessorPage() {
-    const students = Storage.getStudents();
-    const requests = Storage.getAdvanceRequests();
+  async function _hydrateProfessorPage() {
+    const students = await Storage.getStudents();
+    const requests = await Storage.getAdvanceRequests();
     const pendingCount = Object.keys(requests).length;
 
     // ── Stats ──
     const statsEl  = document.getElementById('profStats');
     const avgMonth = students.length > 0
-      ? (students.reduce((s, a) => s + Storage.getStudentMonth(a.email), 0) / students.length).toFixed(1)
+      ? (students.reduce((s, a) => s + (a.monthIdx || 0), 0) / students.length).toFixed(1)
       : 0;
-    const inFinal = students.filter(s => Storage.getStudentMonth(s.email) >= 9).length;
+    const inFinal = students.filter(s => (s.monthIdx || 0) >= 9).length;
     statsEl.innerHTML = `
       <div class="prof-stat"><div class="prof-stat-num">${students.length}</div><div class="prof-stat-label">Alunos</div></div>
       <div class="prof-stat"><div class="prof-stat-num">${avgMonth}</div><div class="prof-stat-label">Módulo Médio</div></div>
@@ -866,7 +866,7 @@ const UI = (() => {
     }
 
     tbody.innerHTML = students.map((s, rowIdx) => {
-      const mIdx    = Storage.getStudentMonth(s.email);
+      const mIdx    = s.monthIdx ?? 0;
       const m       = MONTHS_DATA[mIdx];
       const hasPending = !!requests[s.email];
       const opts    = MONTHS_DATA.map((mo, i) =>
@@ -903,37 +903,37 @@ const UI = (() => {
     }).join('');
   }
 
-  function saveStudentMonth(rowIdx, email) {
+  async function saveStudentMonth(rowIdx, email) {
     const sel = document.getElementById(`sel-${rowIdx}`);
     const btn = document.getElementById(`savebtn-${rowIdx}`);
     if (!sel || !btn) return;
     const newIdx = parseInt(sel.value);
-    Storage.setStudentMonth(email, newIdx);
+    await Storage.setStudentMonth(email, newIdx);
     // Se professor mudou manualmente, limpa qualquer solicitação pendente
-    Storage.clearAdvanceRequest(email);
+    await Storage.clearAdvanceRequest(email);
     btn.textContent = '✓ Salvo!';
     btn.classList.add('saved');
     setTimeout(() => {
       btn.textContent = 'Salvar';
       btn.classList.remove('saved');
-      _hydrateProfessorPage();
+      await _hydrateProfessorPage();
     }, 1600);
   }
 
-  function approveAdvance(email, currentMonthIdx) {
+  async function approveAdvance(email, currentMonthIdx) {
     const next = currentMonthIdx + 1;
     if (next >= MONTHS_DATA.length) return;
-    Storage.setStudentMonth(email, next);
-    Storage.clearAdvanceRequest(email);
-    _hydrateProfessorPage();
+    await Storage.setStudentMonth(email, next);
+    await Storage.clearAdvanceRequest(email);
+    await _hydrateProfessorPage();
   }
 
-  function denyAdvance(email) {
-    Storage.clearAdvanceRequest(email);
-    _hydrateProfessorPage();
+  async function denyAdvance(email) {
+    await Storage.clearAdvanceRequest(email);
+    await _hydrateProfessorPage();
   }
 
-  function addStudent() {
+  async function addStudent() {
     const nameEl  = document.getElementById('newStudentName');
     const emailEl = document.getElementById('newStudentEmail');
     const passEl  = document.getElementById('newStudentPass');
@@ -946,24 +946,24 @@ const UI = (() => {
     if (!name)                       { alert('Informe o nome do aluno.'); return; }
     if (!email || !email.includes('@')) { alert('Informe um email válido.'); return; }
     if (!password || password.length < 3) { alert('Defina uma senha com pelo menos 3 caracteres.'); return; }
-    if (Storage.findStudent(email))  { alert('Este email já está cadastrado.'); return; }
+    if (await Storage.findStudent(email))  { alert('Este email já está cadastrado.'); return; }
 
-    Storage.upsertStudent({ email, name, password, monthIdx });
-    Storage.setStudentMonth(email, monthIdx);
+    await Storage.upsertStudent({ email, name, password, monthIdx });
+    await Storage.setStudentMonth(email, monthIdx);
 
     nameEl.value  = '';
     emailEl.value = '';
     passEl.value  = '';
     monthEl.value = '0';
 
-    _hydrateProfessorPage();
+    await _hydrateProfessorPage();
   }
 
-  function removeStudent(email) {
+  async function removeStudent(email) {
     if (!confirm(`Remover o aluno "${email}"?\nO progresso dele será mantido caso seja recadastrado.`)) return;
-    Storage.removeStudent(email);
-    Storage.clearAdvanceRequest(email);
-    _hydrateProfessorPage();
+    await Storage.removeStudent(email);
+    await Storage.clearAdvanceRequest(email);
+    await _hydrateProfessorPage();
   }
 
   // ── Toggle senha visível/oculta na tabela ────
@@ -971,7 +971,7 @@ const UI = (() => {
   let _passVisible = {};
 
   function togglePassView(rowIdx, email) {
-    const student = Storage.findStudent(email);
+    const student = await Storage.findStudent(email);
     const el = document.getElementById(`passDisplay-${rowIdx}`);
     if (!el || !student) return;
     _passVisible[rowIdx] = !_passVisible[rowIdx];

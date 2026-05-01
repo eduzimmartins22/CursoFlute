@@ -1,146 +1,140 @@
 /* =============================================
-   storage.js — Camada de acesso ao localStorage.
+   storage.js — Camada de dados via Firestore.
    Toda leitura/escrita passa por aqui.
+
+   Coleções no Firestore:
+   - students/{email}  → { name, password, monthIdx }
+   - progress/{email}__{monthIdx} → { checked: {} }
+   - requests/{email}  → { name, monthIdx, requestedAt }
+   - streaks/{email}   → { count }
    ============================================= */
 
 'use strict';
 
 const Storage = (() => {
 
-  const KEYS = {
-    session:      () => 'mf_session',
-    students:     () => 'mf_students',
-    monthIdx:     (email) => `mf_month_${email}`,
-    checklist:    (email, mIdx) => `mf_ck_${email}_${mIdx}`,
-    streak:       (email) => `mf_streak_${email}`,
-    initialized:  () => 'mf_initialized',
-    advanceReqs:  () => 'mf_advance_requests',
+  // ── Helpers Firestore ─────────────────────────
+
+  const col = {
+    students:  () => db.collection('students'),
+    progress:  () => db.collection('progress'),
+    requests:  () => db.collection('requests'),
+    streaks:   () => db.collection('streaks'),
   };
 
-  // ── Helpers internos ──────────────────────────
-
-  function _get(key) {
-    try { return JSON.parse(localStorage.getItem(key)); }
-    catch { return null; }
-  }
-
-  function _set(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-    catch { return false; }
-  }
-
-  function _remove(key) {
-    localStorage.removeItem(key);
-  }
+  // Sessão ainda fica em localStorage (só dados do dispositivo logado)
+  const _session = {
+    save: (obj) => localStorage.setItem('mf_session', JSON.stringify(obj)),
+    get:  ()    => { try { return JSON.parse(localStorage.getItem('mf_session')); } catch { return null; } },
+    clear: ()   => localStorage.removeItem('mf_session'),
+  };
 
   // ── Sessão ────────────────────────────────────
 
-  function saveSession(sessionObj) {
-    _set(KEYS.session(), sessionObj);
-  }
-
-  function getSession() {
-    return _get(KEYS.session());
-  }
-
-  function clearSession() {
-    _remove(KEYS.session());
-  }
+  function saveSession(obj)  { _session.save(obj); }
+  function getSession()      { return _session.get(); }
+  function clearSession()    { _session.clear(); }
 
   // ── Alunos ────────────────────────────────────
-  // Lista gerenciada exclusivamente pelo professor.
-  // Nenhum aluno entra sem estar aqui.
 
-  function initStudents() {
-    if (_get(KEYS.initialized())) return;
-    _set(KEYS.students(), DEMO_STUDENTS);
-    DEMO_STUDENTS.forEach(s => {
-      _set(KEYS.monthIdx(s.email), s.monthIdx);
-    });
-    _set(KEYS.initialized(), true);
+  // Retorna todos os alunos como array
+  async function getStudents() {
+    const snap = await col.students().get();
+    return snap.docs.map(d => ({ email: d.id, ...d.data() }));
   }
 
-  function getStudents() {
-    return _get(KEYS.students()) || [];
+  // Busca um aluno pelo email (id do documento)
+  async function findStudent(email) {
+    const doc = await col.students().doc(email).get();
+    if (!doc.exists) return null;
+    return { email: doc.id, ...doc.data() };
   }
 
-  // Retorna o aluno pelo email, ou null se não cadastrado
-  function findStudent(email) {
-    return getStudents().find(s => s.email === email) || null;
+  // Cria ou atualiza um aluno
+  async function upsertStudent(studentObj) {
+    const { email, ...data } = studentObj;
+    await col.students().doc(email).set(data, { merge: true });
   }
 
-  function upsertStudent(studentObj) {
-    const students = getStudents();
-    const idx = students.findIndex(s => s.email === studentObj.email);
-    if (idx >= 0) students[idx] = { ...students[idx], ...studentObj };
-    else students.push(studentObj);
-    _set(KEYS.students(), students);
-  }
-
-  function removeStudent(email) {
-    const students = getStudents().filter(s => s.email !== email);
-    _set(KEYS.students(), students);
+  // Remove um aluno
+  async function removeStudent(email) {
+    await col.students().doc(email).delete();
   }
 
   // ── Mês do aluno ─────────────────────────────
 
-  function getStudentMonth(email) {
-    const val = _get(KEYS.monthIdx(email));
-    return (val !== null && val !== undefined) ? val : 0;
+  async function getStudentMonth(email) {
+    const doc = await col.students().doc(email).get();
+    if (!doc.exists) return 0;
+    return doc.data().monthIdx ?? 0;
   }
 
-  function setStudentMonth(email, monthIdx) {
-    _set(KEYS.monthIdx(email), monthIdx);
-    upsertStudent({ email, monthIdx });
+  async function setStudentMonth(email, monthIdx) {
+    await col.students().doc(email).set({ monthIdx }, { merge: true });
   }
 
-  // ── Checklist do mês ─────────────────────────
+  // ── Checklist ────────────────────────────────
+  // chave do doc: "email__monthIdx"
 
-  function getChecklist(email, monthIdx) {
-    return _get(KEYS.checklist(email, monthIdx)) || {};
+  async function getChecklist(email, monthIdx) {
+    const key = `${email}__${monthIdx}`;
+    const doc = await col.progress().doc(key).get();
+    if (!doc.exists) return {};
+    return doc.data().checked || {};
   }
 
-  function setChecklistItem(email, monthIdx, objIdx, checked) {
-    const data = getChecklist(email, monthIdx);
-    data[objIdx] = checked;
-    _set(KEYS.checklist(email, monthIdx), data);
-    return data;
+  async function setChecklistItem(email, monthIdx, objIdx, checked) {
+    const key  = `${email}__${monthIdx}`;
+    const current = await getChecklist(email, monthIdx);
+    current[objIdx] = checked;
+    await col.progress().doc(key).set({ checked: current });
+    return current;
   }
 
   // ── Streak ───────────────────────────────────
 
-  function getStreak(email) {
-    return _get(KEYS.streak(email)) || 0;
+  async function getStreak(email) {
+    const doc = await col.streaks().doc(email).get();
+    if (!doc.exists) return 0;
+    return doc.data().count || 0;
   }
 
-  function incrementStreak(email) {
-    const newStreak = getStreak(email) + 1;
-    _set(KEYS.streak(email), newStreak);
-    return newStreak;
+  async function incrementStreak(email) {
+    const current = await getStreak(email);
+    const next = current + 1;
+    await col.streaks().doc(email).set({ count: next });
+    return next;
   }
 
-  // ── Solicitações de avanço de módulo ─────────
-  // Estrutura: { [email]: { name, monthIdx, requestedAt } }
-  // O aluno solicita → o professor aprova ou ignora.
+  // ── Solicitações de avanço ───────────────────
 
-  function getAdvanceRequests() {
-    return _get(KEYS.advanceReqs()) || {};
+  async function getAdvanceRequests() {
+    const snap = await col.requests().get();
+    const result = {};
+    snap.docs.forEach(d => { result[d.id] = d.data(); });
+    return result;
   }
 
-  function requestAdvance(email, name, monthIdx) {
-    const reqs = getAdvanceRequests();
-    reqs[email] = { name, monthIdx, requestedAt: new Date().toISOString() };
-    _set(KEYS.advanceReqs(), reqs);
+  async function requestAdvance(email, name, monthIdx) {
+    await col.requests().doc(email).set({
+      name, monthIdx,
+      requestedAt: new Date().toISOString(),
+    });
   }
 
-  function hasAdvanceRequest(email) {
-    return !!getAdvanceRequests()[email];
+  async function hasAdvanceRequest(email) {
+    const doc = await col.requests().doc(email).get();
+    return doc.exists;
   }
 
-  function clearAdvanceRequest(email) {
-    const reqs = getAdvanceRequests();
-    delete reqs[email];
-    _set(KEYS.advanceReqs(), reqs);
+  async function clearAdvanceRequest(email) {
+    await col.requests().doc(email).delete();
+  }
+
+  // ── Init (não precisa mais de seed local) ────
+
+  function initStudents() {
+    // Tudo no Firestore agora — nada a fazer no boot
   }
 
   // API pública
