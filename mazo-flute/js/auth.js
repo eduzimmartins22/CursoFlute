@@ -1,8 +1,8 @@
 /* =============================================
    auth.js — Autenticação (aluno e professor).
    - Professor: login "Prof" + senha "Edu321"
-   - Aluno: email cadastrado + senha "aln321"
-     Só entra quem o professor cadastrou.
+   - Aluno: email cadastrado pelo professor +
+     senha definida pelo professor no cadastro.
    ============================================= */
 
 'use strict';
@@ -34,16 +34,16 @@ const Auth = (() => {
       return _startSession({ email: prof.login, name: prof.name, role: 'professor' });
     }
 
-    // 2. Aluno — senha fixa obrigatória
-    if (password !== CREDENTIALS.studentPassword) {
-      errEl.textContent = 'Senha incorreta.';
+    // 2. Aluno — busca pelo email na lista do professor
+    const student = Storage.findStudent(loginValue.toLowerCase().trim());
+    if (!student) {
+      errEl.textContent = 'Email não encontrado. Fale com o professor.';
       return false;
     }
 
-    // 3. Email deve estar na lista cadastrada pelo professor
-    const student = Storage.findStudent(loginValue);
-    if (!student) {
-      errEl.textContent = 'Acesso não autorizado. Fale com o professor.';
+    // 3. Valida a senha individual do aluno
+    if (student.password !== password) {
+      errEl.textContent = 'Senha incorreta.';
       return false;
     }
 
@@ -90,7 +90,7 @@ const Auth = (() => {
   function checkPersistedSession() {
     const session = Storage.getSession();
     if (!session) return;
-    // Revalida: professor sempre ok, aluno precisa ainda estar cadastrado
+    // Revalida: professor ok, aluno precisa ainda estar cadastrado
     if (session.role === 'student' && !Storage.findStudent(session.email)) {
       Storage.clearSession();
       return;
@@ -101,17 +101,17 @@ const Auth = (() => {
   // ── Formulários ───────────────────────────────
 
   function showStudentLoginForm() {
-    document.getElementById('loginLabelUser').textContent    = 'Email';
-    document.getElementById('loginUser').placeholder        = 'seu@email.com';
-    document.getElementById('loginLabelPass').textContent   = 'Senha';
-    document.getElementById('loginDemoNote').style.display  = 'block';
+    document.getElementById('loginLabelUser').textContent   = 'Email';
+    document.getElementById('loginUser').placeholder       = 'seu@email.com';
+    document.getElementById('loginLabelPass').textContent  = 'Senha';
+    document.getElementById('loginDemoNote').style.display = 'block';
   }
 
   function showProfessorLoginForm() {
-    document.getElementById('loginLabelUser').textContent    = 'Login';
-    document.getElementById('loginUser').placeholder        = 'Login do professor';
-    document.getElementById('loginLabelPass').textContent   = 'Senha';
-    document.getElementById('loginDemoNote').style.display  = 'none';
+    document.getElementById('loginLabelUser').textContent   = 'Login';
+    document.getElementById('loginUser').placeholder       = 'Login do professor';
+    document.getElementById('loginLabelPass').textContent  = 'Senha';
+    document.getElementById('loginDemoNote').style.display = 'none';
   }
 
   // API pública

@@ -7,19 +7,12 @@
 
 // ─── Credenciais ────────────────────────────────
 const CREDENTIALS = {
-  studentPassword: 'aln321',  // Senha única de todos os alunos
   professor: { login: 'Prof', password: 'Edu321', role: 'professor', name: 'Eduardo' },
 };
 
-// Alunos demo pré-cadastrados (em produção viria de um backend)
-const DEMO_STUDENTS = [
-  { email: 'joao@aluno.com',    name: 'João Silva',     monthIdx: 0 },
-  { email: 'maria@aluno.com',   name: 'Maria Souza',    monthIdx: 1 },
-  { email: 'pedro@aluno.com',   name: 'Pedro Lima',     monthIdx: 2 },
-  { email: 'ana@aluno.com',     name: 'Ana Ferreira',   monthIdx: 3 },
-  { email: 'lucas@aluno.com',   name: 'Lucas Oliveira', monthIdx: 0 },
-  { email: 'julia@aluno.com',   name: 'Júlia Santos',   monthIdx: 1 },
-];
+// Alunos cadastrados pelo professor via painel.
+// Lista começa vazia — adicione os alunos pelo painel do professor.
+const DEMO_STUDENTS = [];
 
 // ─── Meses do Curso ──────────────────────────────
 // Baseado no plano curricular + conteúdo do PDF "Seu Curso de Flauta Transversal"

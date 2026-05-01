@@ -776,6 +776,10 @@ const UI = (() => {
             <input type="email" id="newStudentEmail" placeholder="email@exemplo.com">
           </div>
           <div class="add-field">
+            <label>Senha do aluno</label>
+            <input type="text" id="newStudentPass" placeholder="ex: flauta2025">
+          </div>
+          <div class="add-field">
             <label>Módulo inicial</label>
             <select id="newStudentMonth" class="month-select">
               ${MONTHS_DATA.map((mo, i) => `<option value="${i}">${mo.name} — ${mo.tag}</option>`).join('')}
@@ -783,7 +787,7 @@ const UI = (() => {
           </div>
           <button class="save-row-btn" onclick="UI.addStudent()">Cadastrar</button>
         </div>
-        <div class="tip" style="margin-top:1rem">🔑 A senha de todos os alunos é <strong>aln321</strong>. Compartilhe com o aluno após cadastrá-lo.</div>
+        <div class="tip" style="margin-top:1rem">🔑 Defina uma senha para cada aluno e compartilhe com ele após o cadastro.</div>
       </div>
 
       <!-- Tabela de alunos -->
@@ -793,7 +797,7 @@ const UI = (() => {
           <thead>
             <tr>
               <th>Aluno</th>
-              <th>Email</th>
+              <th>Senha</th>
               <th>Módulo Atual</th>
               <th>Alterar Módulo</th>
               <th>Ações</th>
@@ -875,8 +879,14 @@ const UI = (() => {
             ${hasPending ? '<span style="color:var(--warn);margin-right:4px">⏳</span>' : ''}
             ${s.name}
           </div>
+          <div class="student-email">${s.email}</div>
         </td>
-        <td><div class="student-email">${s.email}</div></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span id="passDisplay-${rowIdx}" style="font-size:.82rem;color:var(--muted);letter-spacing:.05em">${'•'.repeat((s.password||'').length || 6)}</span>
+            <button onclick="UI.togglePassView(${rowIdx},'${s.email}')" style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--gold3);font-family:var(--ff-body);font-weight:600">ver</button>
+          </div>
+        </td>
         <td><span class="badge badge--gold">${m.emoji} ${m.name}</span></td>
         <td>
           <select class="month-select" id="sel-${rowIdx}">
@@ -926,20 +936,24 @@ const UI = (() => {
   function addStudent() {
     const nameEl  = document.getElementById('newStudentName');
     const emailEl = document.getElementById('newStudentEmail');
+    const passEl  = document.getElementById('newStudentPass');
     const monthEl = document.getElementById('newStudentMonth');
-    const name    = nameEl.value.trim();
-    const email   = emailEl.value.trim().toLowerCase();
+    const name     = nameEl.value.trim();
+    const email    = emailEl.value.trim().toLowerCase();
+    const password = passEl.value.trim();
     const monthIdx = parseInt(monthEl.value);
 
-    if (!name)  { alert('Informe o nome do aluno.'); return; }
+    if (!name)                       { alert('Informe o nome do aluno.'); return; }
     if (!email || !email.includes('@')) { alert('Informe um email válido.'); return; }
-    if (Storage.findStudent(email)) { alert('Este email já está cadastrado.'); return; }
+    if (!password || password.length < 3) { alert('Defina uma senha com pelo menos 3 caracteres.'); return; }
+    if (Storage.findStudent(email))  { alert('Este email já está cadastrado.'); return; }
 
-    Storage.upsertStudent({ email, name, monthIdx });
+    Storage.upsertStudent({ email, name, password, monthIdx });
     Storage.setStudentMonth(email, monthIdx);
 
     nameEl.value  = '';
     emailEl.value = '';
+    passEl.value  = '';
     monthEl.value = '0';
 
     _hydrateProfessorPage();
@@ -950,6 +964,20 @@ const UI = (() => {
     Storage.removeStudent(email);
     Storage.clearAdvanceRequest(email);
     _hydrateProfessorPage();
+  }
+
+  // ── Toggle senha visível/oculta na tabela ────
+
+  let _passVisible = {};
+
+  function togglePassView(rowIdx, email) {
+    const student = Storage.findStudent(email);
+    const el = document.getElementById(`passDisplay-${rowIdx}`);
+    if (!el || !student) return;
+    _passVisible[rowIdx] = !_passVisible[rowIdx];
+    el.textContent = _passVisible[rowIdx]
+      ? (student.password || '—')
+      : '•'.repeat((student.password || '').length || 6);
   }
 
   // API pública
@@ -971,6 +999,7 @@ const UI = (() => {
     denyAdvance,
     addStudent,
     removeStudent,
+    togglePassView,
   };
 
 })();
