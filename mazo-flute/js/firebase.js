@@ -1,11 +1,9 @@
 /* =============================================
-   firebase.js — Inicialização do Firebase e
-   exportação do db (Firestore).
+   firebase.js — Inicialização do Firebase
    ============================================= */
 
 'use strict';
 
-// Usando Firebase via CDN (compat mode — sem bundler necessário)
 const firebaseConfig = {
   apiKey:            "AIzaSyA-Xar78wLCHAaYA5W0paI7xF76vWkenys",
   authDomain:        "mazo-flute.firebaseapp.com",
@@ -17,5 +15,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// Instância global do Firestore — usada pelo storage.js
+// Instância global do Firestore
 const db = firebase.firestore();
+
+// Força conexão em rede (evita modo offline persistente)
+db.enableNetwork().catch(() => {});
