@@ -1,4 +1,3 @@
-(async () => {
 /* =============================================
    main.js — Bootstrap da aplicação.
    ============================================= */
@@ -11,5 +10,3 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Verifica sessão salva com revalidação no Firestore
   await Auth.checkPersistedSession();
 });
-
-})();

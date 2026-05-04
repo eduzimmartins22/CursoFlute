@@ -70,9 +70,9 @@ const Auth = (() => {
     document.getElementById('app').classList.add('visible');
 
     if (user.role === 'professor') {
-      await window.UI && UI.initProfessor(user);
+      await UI.initProfessor(user);
     } else {
-      await window.UI && UI.initStudent(user);
+      await UI.initStudent(user);
     }
   }
 
@@ -132,4 +132,5 @@ const Auth = (() => {
     showProfessorLoginForm,
   };
 
-})();
+
+window.attemptLogin = attemptLogin;

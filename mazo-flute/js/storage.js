@@ -129,4 +129,3 @@ const Storage = (() => {
     getAdvanceRequests, requestAdvance, hasAdvanceRequest, clearAdvanceRequest,
   };
 
-})();

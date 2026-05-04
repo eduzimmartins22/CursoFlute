@@ -69,7 +69,7 @@ const Timer = (() => {
     const user = Auth.getCurrentUser();
     if (user) {
       const streak = Storage.incrementStreak(user.email);
-      window.UI && UI.refreshStreakDisplay(streak);
+      UI.refreshStreakDisplay(streak);
       alert(`🎉 Sessão concluída!\nSequência de prática: ${streak} dias 🔥`);
     }
   }
@@ -90,4 +90,3 @@ const Timer = (() => {
   // API pública
   return { init, setPreset, toggle, reset };
 
-})();
