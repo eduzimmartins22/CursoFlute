@@ -2,7 +2,7 @@
    auth.js — Autenticação com Firestore.
    Professor: login "Prof" + senha "Edu321"
    Aluno: email cadastrado + senha individual
-          definida pelo professor no painel de controle.
+          definida pelo professor no painel.
    ============================================= */
 
 'use strict';
@@ -70,9 +70,9 @@ const Auth = (() => {
     document.getElementById('app').classList.add('visible');
 
     if (user.role === 'professor') {
-      await UI.initProfessor(user);
+      await window.UI && UI.initProfessor(user);
     } else {
-      await UI.initStudent(user);
+      await window.UI && UI.initStudent(user);
     }
   }
 

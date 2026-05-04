@@ -48,13 +48,13 @@ const UI = (() => {
       { page: 'timer',     label: '⏱️ Timer'        },
     ];
     nav.innerHTML = tabs.map(t =>
-      `<button class="nav-tab" data-page="${t.page}" onclick="UI.goPage('${t.page}')">${t.label}</button>`
+      `<button class="nav-tab" data-page="${t.page}" onclick="window.UI && UI.goPage('${t.page}')">${t.label}</button>`
     ).join('');
   }
 
   function _buildProfessorNav() {
     const nav = document.getElementById('navBar');
-    nav.innerHTML = `<button class="nav-tab active" data-page="professor" onclick="UI.goPage('professor')">🎓 Painel do Professor</button>`;
+    nav.innerHTML = `<button class="nav-tab active" data-page="professor" onclick="window.UI && UI.goPage('professor')">🎓 Painel do Professor</button>`;
   }
 
   // ── Page switching ────────────────────────────
@@ -131,17 +131,17 @@ const UI = (() => {
       </div>
       <div class="sec-title">🎯 Comece por Aqui</div>
       <div class="cards-grid">
-        <div class="card" onclick="UI.goPage('jornada')">
+        <div class="card" onclick="window.UI && UI.goPage('jornada')">
           <div class="card-ico">📅</div>
           <h3>Minha Jornada</h3>
           <p>Acesse o conteúdo do seu módulo atual e marque seus objetivos.</p>
         </div>
-        <div class="card" onclick="UI.goPage('tecnicas')">
+        <div class="card" onclick="window.UI && UI.goPage('tecnicas')">
           <div class="card-ico">💨</div>
           <h3>Técnicas Essenciais</h3>
           <p>Posicionamento, embocadura, respiração e dedilhado.</p>
         </div>
-        <div class="card" onclick="UI.goPage('escalas')">
+        <div class="card" onclick="window.UI && UI.goPage('escalas')">
           <div class="card-ico">🎼</div>
           <h3>Escalas Maiores</h3>
           <p>Escalas reais e cifradas — Si♭ é a mais usada no louvor!</p>
@@ -170,7 +170,7 @@ const UI = (() => {
         </div>
       </div>
       <div id="monthDetail" style="display:none">
-        <button class="back-btn" onclick="UI.closeMonthDetail()">← Voltar à Jornada</button>
+        <button class="back-btn" onclick="window.UI && UI.closeMonthDetail()">← Voltar à Jornada</button>
         <div id="monthDetailContent"></div>
       </div>
     </div>`;
@@ -276,10 +276,10 @@ const UI = (() => {
 
       <!-- Tabs dos circuitos -->
       <div class="circuit-tabs">
-        <button class="circuit-tab active" onclick="UI.switchCircuit('fifths', this)">
+        <button class="circuit-tab active" onclick="window.UI && UI.switchCircuit('fifths', this)">
           🔺 Circuito das Quintas (#)
         </button>
-        <button class="circuit-tab" onclick="UI.switchCircuit('fourths', this)">
+        <button class="circuit-tab" onclick="window.UI && UI.switchCircuit('fourths', this)">
           🔻 Circuito das Quartas (♭)
         </button>
       </div>
@@ -365,7 +365,7 @@ const UI = (() => {
         <div class="dl-ico">${i.ico}</div>
         <div class="dl-title">${i.title}</div>
         <div class="dl-desc">${i.desc}</div>
-        <button class="dl-btn" onclick="UI.alertPDF('${i.key}')">Baixar PDF</button>
+        <button class="dl-btn" onclick="window.UI && UI.alertPDF('${i.key}')">Baixar PDF</button>
       </div>`).join('');
 
     return `
@@ -413,10 +413,10 @@ const UI = (() => {
       <div class="sec-title" style="margin-top:2rem">📝 Checklist de Hoje</div>
       <div class="cbox">
         <ul class="day-checklist" id="dayChecklist">
-          <li><input type="checkbox" id="dc1" onchange="UI.checkDay()"><span>Sons longos e aquecimento (5 min)</span></li>
-          <li><input type="checkbox" id="dc2" onchange="UI.checkDay()"><span>Exercícios de respiração diafragmática</span></li>
-          <li><input type="checkbox" id="dc3" onchange="UI.checkDay()"><span>Escalas do módulo atual (app)</span></li>
-          <li><input type="checkbox" id="dc4" onchange="UI.checkDay()"><span>Louvor ou peça da semana</span></li>
+          <li><input type="checkbox" id="dc1" onchange="window.UI && UI.checkDay()"><span>Sons longos e aquecimento (5 min)</span></li>
+          <li><input type="checkbox" id="dc2" onchange="window.UI && UI.checkDay()"><span>Exercícios de respiração diafragmática</span></li>
+          <li><input type="checkbox" id="dc3" onchange="window.UI && UI.checkDay()"><span>Escalas do módulo atual (app)</span></li>
+          <li><input type="checkbox" id="dc4" onchange="window.UI && UI.checkDay()"><span>Louvor ou peça da semana</span></li>
         </ul>
       </div>
     </div>`;
@@ -471,7 +471,7 @@ const UI = (() => {
         : isDone
         ? `<span class="badge badge--success mc-badge">✓</span>`
         : '';
-      const click = !isLocked ? `onclick="UI.openMonthDetail(${i})"` : '';
+      const click = !isLocked ? `onclick="window.UI && UI.openMonthDetail(${i})"` : '';
       return `
       <div class="month-card ${cls}" ${click}>
         ${badge}
@@ -541,7 +541,7 @@ const UI = (() => {
         ? (i === 0 ? 'Início' : `${i * 7}ª pos.`)
         : (i === 0 ? 'Início' : `${i * 5}ª pos.`);
       return `
-      <div class="scale-box" onclick="UI.showScale('${s.key}', this)" data-circuit="${circuit}">
+      <div class="scale-box" onclick="window.UI && UI.showScale('${s.key}', this)" data-circuit="${circuit}">
         <div class="sc-step">${stepLabel}</div>
         <div class="sc-name">${s.name}</div>
         <div class="sc-info">${circuit === 'fifths' ? (s.sharps === '—' ? '0 #' : s.sharps.split(' · ').length + '#') : s.flats.split(' · ').length + '♭'}</div>
@@ -610,7 +610,7 @@ const UI = (() => {
       return `
       <li class="${checked ? 'done-item' : ''}">
         <input type="checkbox" ${checked ? 'checked' : ''}
-          onchange="UI.toggleCheck(${idx}, ${j}, this)">
+          onchange="window.UI && UI.toggleCheck(${idx}, ${j}, this)">
         <span>${o}</span>
       </li>`;
     }).join('');
@@ -623,7 +623,7 @@ const UI = (() => {
         ? `<div class="request-pending-block">
              ⏳ Solicitação de avanço enviada ao professor. Aguarde a aprovação.
            </div>`
-        : `<button class="request-advance-btn" onclick="UI.requestAdvance(${idx})">
+        : `<button class="request-advance-btn" onclick="window.UI && UI.requestAdvance(${idx})">
              📩 Solicitar avanço ao professor
            </button>`
       : '';
@@ -687,7 +687,7 @@ const UI = (() => {
         const block = document.createElement('div');
         block.innerHTML = alreadyReq
           ? `<div class="request-pending-block">⏳ Solicitação de avanço enviada ao professor. Aguarde a aprovação.</div>`
-          : `<button class="request-advance-btn" onclick="UI.requestAdvance(${monthIdx})">📩 Solicitar avanço ao professor</button>`;
+          : `<button class="request-advance-btn" onclick="window.UI && UI.requestAdvance(${monthIdx})">📩 Solicitar avanço ao professor</button>`;
         document.getElementById('monthDetailContent').appendChild(block.firstElementChild);
       }
     }
@@ -785,7 +785,7 @@ const UI = (() => {
               ${MONTHS_DATA.map((mo, i) => `<option value="${i}">${mo.name} — ${mo.tag}</option>`).join('')}
             </select>
           </div>
-          <button class="save-row-btn" onclick="UI.addStudent()">Cadastrar</button>
+          <button class="save-row-btn" onclick="window.UI && UI.addStudent()">Cadastrar</button>
         </div>
         <div class="tip" style="margin-top:1rem">🔑 Defina uma senha para cada aluno e compartilhe com ele após o cadastro.</div>
       </div>
@@ -846,8 +846,8 @@ const UI = (() => {
             </div>
           </div>
           <div class="request-actions">
-            <button class="req-approve-btn" onclick="UI.approveAdvance('${email}', ${req.monthIdx})">✓ Aprovar</button>
-            <button class="req-deny-btn"    onclick="UI.denyAdvance('${email}')">✗ Recusar</button>
+            <button class="req-approve-btn" onclick="window.UI && UI.approveAdvance('${email}', ${req.monthIdx})">✓ Aprovar</button>
+            <button class="req-deny-btn"    onclick="window.UI && UI.denyAdvance('${email}')">✗ Recusar</button>
           </div>
         </div>`;
       }).join('');
@@ -884,7 +884,7 @@ const UI = (() => {
         <td>
           <div style="display:flex;align-items:center;gap:6px">
             <span id="passDisplay-${rowIdx}" style="font-size:.82rem;color:var(--muted);letter-spacing:.05em">${'•'.repeat((s.password||'').length || 6)}</span>
-            <button onclick="UI.togglePassView(${rowIdx},'${s.email}')" style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--gold3);font-family:var(--ff-body);font-weight:600">ver</button>
+            <button onclick="window.UI && UI.togglePassView(${rowIdx},'${s.email}')" style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--gold3);font-family:var(--ff-body);font-weight:600">ver</button>
           </div>
         </td>
         <td><span class="badge badge--gold">${m.emoji} ${m.name}</span></td>
@@ -895,9 +895,9 @@ const UI = (() => {
         </td>
         <td style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="save-row-btn" id="savebtn-${rowIdx}"
-            onclick="UI.saveStudentMonth(${rowIdx}, '${s.email}')">Salvar</button>
+            onclick="window.UI && UI.saveStudentMonth(${rowIdx}, '${s.email}')">Salvar</button>
           <button class="save-row-btn" style="background:rgba(192,57,43,0.1);color:var(--danger)"
-            onclick="UI.removeStudent('${s.email}')">Remover</button>
+            onclick="window.UI && UI.removeStudent('${s.email}')">Remover</button>
         </td>
       </tr>`;
     }).join('');
