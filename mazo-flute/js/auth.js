@@ -2,7 +2,7 @@
    auth.js — Autenticação com Firestore.
    Professor: login "Prof" + senha "Edu321"
    Aluno: email cadastrado + senha individual
-          definida pelo professor no painel.
+          definida pelo professor no painel de controle.
    ============================================= */
 
 'use strict';
