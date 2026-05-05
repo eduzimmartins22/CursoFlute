@@ -5,10 +5,28 @@ const PROF_PASSWORD = 'Edu321';
 const PROF_NAME     = 'Eduardo';
 
 const MONTHS_DATA = [
-  { num:1,  name:'Janeiro',  emoji:'🎵', tag:'Fundamentos',       desc:'Embocadura, posicionamento e primeiras notas.',             pillar:'Teoria',
-    fullDesc:'O ponto de partida. Você vai construir a base de tudo: embocadura correta, postura e as primeiras notas da flauta.',
-    objectives:['Conhecer Marcel Moyse e os Pilares (Teoria · Prática · Constância)','Posicionamento correto dos dedos nas chaves circulares','Postura corporal: evitar corcunda, cabeça baixa, pernas cruzadas','Embocadura correta — fluxo de ar concentrado','Primeiras notas: Si, Lá, Sol, Fá, Mi da 1ª oitava','Respiração diafragmática básica','Baixar e usar o app Jogo das Escalas'],
-    tip:'Não se apresse — um som belo e limpo vale mais que muitas notas feias. Grave-se para ouvir seu próprio som.' },
+ {
+    num: 1, name: 'Janeiro',
+    emoji: '🎵', tag: 'Fundamentos',
+    desc: 'Embocadura 1ª e 2ª, posicionamento correto e Notas da 1ª, 2ª e 3ª Oitava.',
+    fullDesc: 'O ponto de partida. Você vai construir a base de tudo: a relação correta com a embocadura, a postura com o instrumento e as primeiras notas da flauta — o alicerce de toda a técnica futura.',
+    pillar: 'Teoria',
+    objectives: [
+  'Estudar a sonoridade: produzir timbre centrado, cheio e sem ruído de ar',
+  'Controlar a embocadura com precisão: ajustar abertura e direção do ar para estabilidade em diferentes dinâmicas (piano a forte)',
+  'Sustentar notas longas por 5–10 segundos com afinação estável e sem oscilações',
+  'Manter postura corporal consistente durante toda a prática (sem colapsos ao longo do tempo)',
+  'Executar transições suaves entre notas (Si–Lá–Sol–Fá–Mi) sem “quebras” no som',
+  'Iniciar controle básico de afinação — ajustar micro variações com embocadura e ar',
+  'Explorar 1ª, 2ª e início da 3ª oitava com consciência de apoio de ar (sem tensão)',
+  'Desenvolver controle de ataque (início da nota) sem golpes de ar excessivos',
+  'Manter relaxamento total das mãos mesmo em mudanças de posição',
+  'Gravar e analisar o próprio som identificando: ruído de ar e instabilidade ',
+  'Utilizar o app Jogo das Escalas com foco em precisão e tempo de resposta',
+],
+    tip: 'Não se apresse — um som belo e limpo vale mais do que muitas notas feias. Use o gravador de voz para ouvir seu próprio som e se corrigir.',
+    pdfRef: 'Conteúdo do Módulo 1 • Pilares do Aprendizado (p.4) • Posições (p.6–7) • Notas (p.8)',
+  },
   { num:2,  name:'Fevereiro', emoji:'🎶', tag:'1ª, 2ª e 3ª Oitava', desc:'Expansão do registro — domínio das três oitavas.',           pillar:'Prática',
     fullDesc:'Com a base de janeiro, você expande o alcance passando pelas oitavas. A passagem exige controle de ar e lábio.',
     objectives:['Dominar completamente a 1ª oitava','Notas longas de Moyse — controle de sonoridade','Passagem para a 2ª oitava com controle de ar','Início das notas da 3ª oitava','Ligaduras entre oitavas','Escalas de Dó e Sol Maior nas 3 oitavas','Prática diária com metrônomo e gravação'],
