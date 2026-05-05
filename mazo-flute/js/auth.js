@@ -1,136 +1,100 @@
-/* =============================================
-   auth.js — Autenticação com Firestore.
-   Professor: login "Prof" + senha "Edu321"
-   Aluno: email cadastrado + senha individual
-          definida pelo professor no painel.
-   ============================================= */
+/* auth.js — login / logout */
 
-'use strict';
+let currentUser = null; // { email, name, role }
 
-const Auth = (() => {
+async function doLogin() {
+  const loginVal = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl    = document.getElementById('loginErr');
+  const btn      = document.getElementById('loginBtn');
 
-  let _currentUser = null;
+  errEl.textContent = '';
+  if (!loginVal || !password) { errEl.textContent = 'Preencha todos os campos.'; return; }
 
-  function getCurrentUser() { return _currentUser; }
-  function isLoggedIn()     { return _currentUser !== null; }
-  function isProfessor()    { return _currentUser?.role === 'professor'; }
+  btn.textContent = 'Entrando...';
+  btn.disabled    = true;
 
-  // ── Login ─────────────────────────────────────
-
-  async function attemptLogin(loginValue, password) {
-    const errEl = document.getElementById('loginErr');
-    const btn   = document.getElementById('loginSubmitBtn');
-    errEl.textContent = '';
-
-    if (!loginValue || !password) {
-      errEl.textContent = 'Preencha todos os campos.';
+  try {
+    // Professor
+    if (loginVal === PROF_LOGIN && password === PROF_PASSWORD) {
+      currentUser = { email: PROF_LOGIN, name: PROF_NAME, role: 'professor' };
+      sessionSave(currentUser);
+      showApp();
+      await loadProfessorPage();
       return;
     }
 
-    // Feedback de carregamento
-    btn.textContent = 'Entrando...';
-    btn.disabled = true;
+    // Aluno — busca no Firestore
+    const student = await dbFindStudent(loginVal.toLowerCase());
+    if (!student) {
+      errEl.textContent = 'Email não encontrado. Fale com o professor.';
+      return;
+    }
+    if (student.password !== password) {
+      errEl.textContent = 'Senha incorreta.';
+      return;
+    }
 
+    currentUser = { email: student.email, name: student.name, role: 'student' };
+    sessionSave(currentUser);
+    showApp();
+    await loadStudentPage(student);
+
+  } catch (err) {
+    console.error(err);
+    errEl.textContent = 'Erro de conexão. Verifique sua internet e tente novamente.';
+  } finally {
+    btn.textContent = 'Entrar';
+    btn.disabled    = false;
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  sessionClear();
+  document.getElementById('app').style.display    = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').textContent = '';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display         = 'block';
+  document.getElementById('hName').textContent = currentUser.name;
+  document.getElementById('hRole').textContent =
+    currentUser.role === 'professor' ? '🎓 Professor' : '🎵 Aluno';
+  document.getElementById('hAvatar').textContent =
+    currentUser.name.substring(0,2).toUpperCase();
+}
+
+// Auto-login por sessão persistida
+async function checkSession() {
+  const s = sessionGet();
+  if (!s) return;
+  // Revalida aluno no Firestore
+  if (s.role === 'student') {
     try {
-      // 1. Professor
-      const prof = CREDENTIALS.professor;
-      if (loginValue === prof.login && password === prof.password) {
-        await _startSession({ email: prof.login, name: prof.name, role: 'professor' });
-        return;
-      }
-
-      // 2. Aluno — busca no Firestore
-      const student = await Storage.findStudent(loginValue.toLowerCase().trim());
-      if (!student) {
-        errEl.textContent = 'Email não encontrado. Fale com o professor.';
-        return;
-      }
-
-      if (student.password !== password) {
-        errEl.textContent = 'Senha incorreta.';
-        return;
-      }
-
-      await _startSession({ email: student.email, name: student.name, role: 'student' });
-
-    } catch (err) {
-      console.error(err);
-      errEl.textContent = 'Erro de conexão. Verifique sua internet.';
-    } finally {
-      btn.textContent = 'Entrar';
-      btn.disabled = false;
-    }
+      const student = await dbFindStudent(s.email);
+      if (!student) { sessionClear(); return; }
+      currentUser = s;
+      showApp();
+      await loadStudentPage(student);
+    } catch(e) { sessionClear(); }
+  } else {
+    currentUser = s;
+    showApp();
+    await loadProfessorPage();
   }
+}
 
-  async function _startSession(user) {
-    _currentUser = user;
-    Storage.saveSession(user);
-
-    document.getElementById('loginScreen').classList.add('out');
-    document.getElementById('app').classList.add('visible');
-
-    if (user.role === 'professor') {
-      await UI.initProfessor(user);
-    } else {
-      await UI.initStudent(user);
-    }
-  }
-
-  // ── Logout ────────────────────────────────────
-
-  function logout() {
-    _currentUser = null;
-    Storage.clearSession();
-    document.getElementById('app').classList.remove('visible');
-    document.getElementById('loginScreen').classList.remove('out');
-    document.getElementById('loginUser').value = '';
-    document.getElementById('loginPass').value = '';
-    document.getElementById('loginErr').textContent = '';
-    document.querySelectorAll('.login-tab').forEach((t, i) => {
-      t.classList.toggle('active', i === 0);
-    });
-    showStudentLoginForm();
-  }
-
-  // ── Sessão persistida ─────────────────────────
-
-  async function checkPersistedSession() {
-    const session = Storage.getSession();
-    if (!session) return;
-    // Revalida aluno no Firestore
-    if (session.role === 'student') {
-      const student = await Storage.findStudent(session.email);
-      if (!student) { Storage.clearSession(); return; }
-    }
-    await _startSession(session);
-  }
-
-  // ── Formulários ───────────────────────────────
-
-  function showStudentLoginForm() {
-    document.getElementById('loginLabelUser').textContent   = 'Email';
-    document.getElementById('loginUser').placeholder       = 'seu@email.com';
-    document.getElementById('loginLabelPass').textContent  = 'Senha';
-    document.getElementById('loginDemoNote').style.display = 'block';
-  }
-
-  function showProfessorLoginForm() {
-    document.getElementById('loginLabelUser').textContent   = 'Login';
-    document.getElementById('loginUser').placeholder       = 'Login do professor';
-    document.getElementById('loginLabelPass').textContent  = 'Senha';
-    document.getElementById('loginDemoNote').style.display = 'none';
-  }
-
-  return {
-    attemptLogin,
-    logout,
-    checkPersistedSession,
-    getCurrentUser,
-    isLoggedIn,
-    isProfessor,
-    showStudentLoginForm,
-    showProfessorLoginForm,
-  };
-
-
-window.attemptLogin = attemptLogin;
+// Troca de tab no login
+function switchLoginTab(role, el) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const isProf = role === 'professor';
+  document.getElementById('loginLabelUser').textContent  = isProf ? 'Login' : 'Email';
+  document.getElementById('loginUser').placeholder       = isProf ? 'Login do professor' : 'seu@email.com';
+  document.getElementById('loginDemoNote').style.display = isProf ? 'none' : 'block';
+}

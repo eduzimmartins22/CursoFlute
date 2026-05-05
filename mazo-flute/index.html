@@ -3,123 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Mazo Flute — Curso de Flauta Transversa de Eduardo Martins Cardoso">
   <title>Mazo Flute — Curso de Flauta Transversa</title>
-
-  <!-- Estilos -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       TELA DE LOGIN
-       (Única parte estática — dados injetados
-       pelo auth.js conforme tipo de usuário)
-  ════════════════════════════════════════════ -->
-  <div id="loginScreen">
-    <div class="login-wrap">
-      <div class="login-card">
-
-        <div class="login-logo">
-          <div class="glyph">🎵</div>
-          <h1>Mazo Flute</h1>
-          <p>Curso de Flauta Transversa</p>
-        </div>
-
-        <!-- Seletor de perfil -->
-        <div class="login-tabs">
-          <button class="login-tab active" onclick="Auth.showStudentLoginForm(); this.closest('.login-tabs').querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active')">
-            🎵 Aluno
-          </button>
-          <button class="login-tab" onclick="Auth.showProfessorLoginForm(); this.closest('.login-tabs').querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active')); this.classList.add('active')">
-            🎓 Professor
-          </button>
-        </div>
-
-        <!-- Campos -->
-        <div class="field">
-          <label id="loginLabelUser">Email</label>
-          <input type="text" id="loginUser" placeholder="seu@email.com"
-                 onkeydown="if(event.key==='Enter') Auth.attemptLogin(this.value.trim(), document.getElementById('loginPass').value)">
-        </div>
-        <div class="field">
-          <label id="loginLabelPass">Senha</label>
-          <input type="password" id="loginPass" placeholder="••••••••"
-                 onkeydown="if(event.key==='Enter') Auth.attemptLogin(document.getElementById('loginUser').value.trim(), this.value)">
-        </div>
-
-        <p class="login-err" id="loginErr"></p>
-
-        <button class="login-btn" id="loginSubmitBtn"
-          onclick="Auth.attemptLogin(document.getElementById('loginUser').value.trim(), document.getElementById('loginPass').value)">
-          Entrar
-        </button>
-
-        <div class="demo-note" id="loginDemoNote">
-          Use o email e senha definidos pelo professor.
-        </div>
-
+<!-- LOGIN -->
+<div id="loginScreen" style="position:fixed;inset:0;z-index:9000;background:var(--navy);display:flex;align-items:center;justify-content:center">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="glyph">🎵</div>
+        <h1>Mazo Flute</h1>
+        <p>Curso de Flauta Transversa</p>
+      </div>
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchLoginTab('student',this)">🎵 Aluno</button>
+        <button class="login-tab"        onclick="switchLoginTab('professor',this)">🎓 Professor</button>
+      </div>
+      <div class="field">
+        <label id="loginLabelUser">Email</label>
+        <input type="text" id="loginUser" placeholder="seu@email.com"
+               onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <div class="field">
+        <label id="loginLabelPass">Senha</label>
+        <input type="password" id="loginPass" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <p class="login-err" id="loginErr"></p>
+      <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
+      <div class="demo-note" id="loginDemoNote">
+        Use o email e senha definidos pelo professor.
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ═══════════════════════════════════════════
-       APP PRINCIPAL
-       (Header + Nav + Páginas — tudo gerado
-       dinamicamente pelo ui.js)
-  ════════════════════════════════════════════ -->
-  <div id="app">
-
-    <header>
-      <div class="hdr-brand">
-        <span>🎵</span> Mazo Flute
+<!-- APP -->
+<div id="app" style="display:none">
+  <header>
+    <div class="hdr-brand"><span>🎵</span> Mazo Flute</div>
+    <div class="hdr-right">
+      <div class="avatar" id="hAvatar">??</div>
+      <div>
+        <div class="hdr-name" id="hName">—</div>
+        <div class="hdr-role" id="hRole"></div>
+        <button class="logout-btn" onclick="doLogout()">Sair</button>
       </div>
-      <div class="hdr-right">
-        <div class="avatar" id="hAvatar">??</div>
-        <div>
-          <div class="hdr-name" id="hName">—</div>
-          <div class="hdr-role" id="hRole"></div>
-          <button class="logout-btn" onclick="Auth.logout()">Sair</button>
-        </div>
-      </div>
-    </header>
+    </div>
+  </header>
+  <nav class="nav-bar" id="navBar"></nav>
+  <main class="container">
+    <div id="pagesContainer"></div>
+  </main>
+</div>
 
-    <nav class="nav-bar" id="navBar">
-      <!-- Gerado pelo ui.js conforme papel (aluno/professor) -->
-    </nav>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-    <main class="container">
-      <div id="pagesContainer">
-        <!-- Páginas geradas pelo ui.js -->
-      </div>
-    </main>
-
-  </div><!-- /app -->
-
-
-  <!-- ═══════════════════════════════════════════
-       SCRIPTS — ordem de carregamento importa:
-       1. data      (constantes)
-       2. storage   (persistência)
-       3. auth      (autenticação)
-       4. timer     (cronômetro)
-       5. ui        (renderização)
-       6. main      (bootstrap)
-  ════════════════════════════════════════════ -->
-  <!-- Firebase SDK (compat — sem bundler) -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-  <!-- App — ordem importa -->
-  <script type="module" src="js/firebase.js"></script>
-  <script type="module" src="js/data.js"></script>
-  <script type="module" src="js/storage.js"></script>
-  <script type="module" src="js/auth.js"></script>
-  <script type="module" src="js/timer.js"></script>
-  <script type="module" src="js/ui.js"></script>
-  <script type="module" src="js/main.js"></script>
+<!-- App — ordem importa -->
+<script src="js/data.js"></script>
+<script src="js/db.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/student.js"></script>
+<script src="js/professor.js"></script>
+<script>
+  // Bootstrap
+  document.addEventListener('DOMContentLoaded', () => checkSession());
+</script>
 
 </body>
 </html>
