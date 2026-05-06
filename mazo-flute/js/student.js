@@ -510,33 +510,67 @@ function tplDownloads() {
   ];
 
   function buildCard(item) {
-    // Galeria de imagens
-    const gallery = item.images ? `
-      <div class="dl-gallery">
-        ${item.images.map(img => `
-          <div class="dl-img-wrap" style="background:${img.bg || '#1a2a1a'}">
-            <img src="${img.src}" alt="${img.label}" loading="lazy"
-                 onerror="this.style.display='none'">
-            <div class="dl-img-label">${img.label}</div>
-          </div>
-        `).join('')}
-      </div>` : '';
+    // Botões de abertura em modal
+    let btns = '';
 
-    // Botão PDF ou em breve
-    const btn = item.pdf
-      ? `<a class="dl-btn" href="${item.pdf}" target="_blank">📄 Abrir PDF</a>`
-      : item.images
-      ? '' // imagens não precisam de botão
-      : `<button class="dl-btn" onclick="alert('Em breve! O professor disponibilizará este arquivo.')">🔒 Em breve</button>`;
+    if (item.pdf) {
+      // PDF abre em modal com iframe
+      const safeId = item.title.replace(/[^a-zA-Z0-9]/g, '_');
+      btns = `<button class="dl-btn" onclick="openModal('${safeId}')">📄 Abrir PDF</button>`;
+    } else if (item.images) {
+      // Cada imagem vira um botão que abre modal
+      btns = item.images.map(img => {
+        const safeId = img.label.replace(/[^a-zA-Z0-9]/g, '_');
+        return `<button class="dl-btn dl-btn--img" onclick="openModal('${safeId}')">🖼️ ${img.label}</button>`;
+      }).join('');
+    } else {
+      btns = `<button class="dl-btn dl-btn--soon" disabled>🔒 Em breve</button>`;
+    }
 
     return `
     <div class="dl-card">
       <div class="dl-ico">${item.ico}</div>
       <div class="dl-title">${item.title}</div>
       <div class="dl-desc">${item.desc}</div>
-      ${gallery}
-      ${btn}
+      <div class="dl-btns">${btns}</div>
     </div>`;
+  }
+
+  // Gera os modais de todos os itens
+  function buildModals() {
+    let html = '';
+    items.forEach(item => {
+      if (item.pdf) {
+        const safeId = item.title.replace(/[^a-zA-Z0-9]/g, '_');
+        html += `
+        <div id="modal_${safeId}" class="dl-modal" onclick="closeModalOutside(event,this)">
+          <div class="dl-modal-box dl-modal-box--pdf">
+            <div class="dl-modal-header">
+              <span>${item.title}</span>
+              <button class="dl-modal-close" onclick="closeModal('${safeId}')">✕</button>
+            </div>
+            <iframe src="${item.pdf}" class="dl-modal-iframe" loading="lazy"></iframe>
+          </div>
+        </div>`;
+      } else if (item.images) {
+        item.images.forEach(img => {
+          const safeId = img.label.replace(/[^a-zA-Z0-9]/g, '_');
+          html += `
+          <div id="modal_${safeId}" class="dl-modal" onclick="closeModalOutside(event,this)">
+            <div class="dl-modal-box dl-modal-box--img">
+              <div class="dl-modal-header">
+                <span>${img.label}</span>
+                <button class="dl-modal-close" onclick="closeModal('${safeId}')">✕</button>
+              </div>
+              <div class="dl-modal-img-wrap" style="background:${img.bg || '#1a2a1a'}">
+                <img src="${img.src}" alt="${img.label}">
+              </div>
+            </div>
+          </div>`;
+        });
+      }
+    });
+    return html;
   }
 
   return `
@@ -548,7 +582,31 @@ function tplDownloads() {
     <div class="dl-grid">
       ${items.map(buildCard).join('')}
     </div>
+    ${buildModals()}
   </div>`;
+}
+
+function openModal(id) {
+  const modal = document.getElementById('modal_' + id);
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeModal(id) {
+  const modal = document.getElementById('modal_' + id);
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function closeModalOutside(event, modal) {
+  if (event.target === modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 }
 
 // ── TIMER ────────────────────────────────────

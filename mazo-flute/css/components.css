@@ -792,41 +792,96 @@
   flex-shrink: 0;
 }
 
-/* ── Download Gallery (imagens dentro dos cards) ── */
-.dl-gallery {
+
+
+/* ── Modal de Downloads (PDF e Imagem) ── */
+.dl-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  background: rgba(10,15,25,0.85);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.dl-modal.active {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0.75rem 0;
-}
-.dl-img-wrap {
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-  padding: 8px;
-}
-.dl-img-wrap img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 6px;
-}
-.dl-img-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.6);
-  text-align: center;
-  margin-top: 5px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  animation: fadein 0.2s ease;
 }
 
-/* Cards com galeria ficam mais largos */
-.dl-card:has(.dl-gallery) {
-  grid-column: span 1;
+.dl-modal-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  width: 100%;
 }
+.dl-modal-box--pdf { max-width: 860px; height: 88vh; }
+.dl-modal-box--img { max-width: 700px; }
+
+.dl-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--navy);
+  color: var(--gold2);
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.dl-modal-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 6px;
+  color: var(--white);
+  font-size: 1rem;
+  width: 30px; height: 30px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.dl-modal-close:hover { background: rgba(255,255,255,0.25); }
+
+.dl-modal-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+}
+
+.dl-modal-img-wrap {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dl-modal-img-wrap img {
+  max-width: 100%;
+  max-height: 75vh;
+  border-radius: 6px;
+  display: block;
+}
+
+/* Botões dos cards */
+.dl-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+.dl-btn--img  { background: var(--navy3); }
+.dl-btn--soon { background: var(--cream2); color: var(--muted); cursor: default; }
+
+/* Remove CSS antigo de galeria que não é mais usado */
 @media (min-width: 700px) {
-  .dl-card:has(.dl-gallery) {
-    grid-column: span 2;
-  }
+  .dl-card:has(.dl-gallery) { grid-column: span 1; }
+}
+
+@media (max-width: 600px) {
+  .dl-modal-box--pdf { height: 92vh; }
 }
