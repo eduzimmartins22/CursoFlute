@@ -13,6 +13,21 @@
   justify-content: center;
   transition: opacity 0.5s ease;
 }
+.logo-img {
+  height: 45px;
+  width: auto;
+}
+
+.hdr-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-logo-img {
+  width: 120px;
+  margin-bottom: 10px;
+}
 #loginScreen.out {
   opacity: 0;
   pointer-events: none;
