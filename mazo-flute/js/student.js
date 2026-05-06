@@ -34,10 +34,10 @@ async function renderInicio(student) {
 
   document.getElementById('pagesContainer').innerHTML =
     tplInicio(student, m, mIdx, streak) +
-    tplJornada() +
-    tplTecnicas() +
-    tplEscalas() +
-    tplLouvor() +
+    tplJornada()   +
+    tplTecnicas()  +
+    tplEscalas()   +
+    tplLouvor()    +
     tplDownloads() +
     tplTimer();
 
@@ -91,9 +91,9 @@ function renderTimeline(mIdx) {
   const el = document.getElementById('timeline');
   if (!el) return;
   el.innerHTML = MONTHS_DATA.map((m, i) => {
-    const cls = i < mIdx ? 'done' : i === mIdx ? 'current' : '';
+    const cls    = i < mIdx ? 'done' : i === mIdx ? 'current' : '';
     const status = i < mIdx ? '✓ Concluído' : i === mIdx ? '● Em andamento' : '○ Em breve';
-    const sCls   = i < mIdx ? 'done' : i === mIdx ? 'current' : 'upcoming';
+    const sCls   = i < mIdx ? 'done'        : i === mIdx ? 'current'        : 'upcoming';
     return `
     <div class="tl-item ${cls}">
       <div class="tl-dot">${m.emoji}</div>
@@ -132,7 +132,7 @@ function renderMonthsGrid(student, mIdx) {
     const isDone    = i < mIdx;
     const isCurrent = i === mIdx;
     const isLocked  = i > mIdx;
-    const cls = [isDone?'done':'', isCurrent?'current':'', isLocked?'locked':''].filter(Boolean).join(' ');
+    const cls   = [isDone?'done':'', isCurrent?'current':'', isLocked?'locked':''].filter(Boolean).join(' ');
     const badge = isCurrent ? `<span class="mc-badge badge badge--gold">Atual</span>`
                 : isDone    ? `<span class="mc-badge badge badge--success">✓</span>` : '';
     const click = !isLocked ? `onclick="openMonthDetail(${i})"` : '';
@@ -147,12 +147,11 @@ function renderMonthsGrid(student, mIdx) {
 }
 
 async function openMonthDetail(idx) {
-  const m      = MONTHS_DATA[idx];
-  const mIdx   = currentUser ? (await dbFindStudent(currentUser.email))?.monthIdx ?? 0 : 0;
-  const isCurr = idx === mIdx;
-  const isDone = idx < mIdx;
-  const saved  = await dbGetChecklist(currentUser.email, idx);
-
+  const m         = MONTHS_DATA[idx];
+  const mIdx      = currentUser ? (await dbFindStudent(currentUser.email))?.monthIdx ?? 0 : 0;
+  const isCurr    = idx === mIdx;
+  const isDone    = idx < mIdx;
+  const saved     = await dbGetChecklist(currentUser.email, idx);
   const doneCount = Object.values(saved).filter(v=>v).length;
   const total     = m.objectives.length;
   const pct       = total > 0 ? Math.round(doneCount/total*100) : 0;
@@ -171,7 +170,7 @@ async function openMonthDetail(idx) {
   }).join('');
 
   const canRequest = isCurr && pct === 100 && idx < MONTHS_DATA.length - 1;
-  const reqBlock = canRequest
+  const reqBlock   = canRequest
     ? (alreadyReq
         ? `<div class="request-pending-block">⏳ Solicitação enviada ao professor. Aguarde.</div>`
         : `<button class="request-advance-btn" onclick="sendAdvanceRequest(${idx})">📩 Solicitar avanço ao professor</button>`)
@@ -203,25 +202,24 @@ async function openMonthDetail(idx) {
 }
 
 function closeMonthDetail() {
-  document.getElementById('monthDetail').style.display  = 'none';
-  document.getElementById('jornadaGrid').style.display  = 'block';
+  document.getElementById('monthDetail').style.display = 'none';
+  document.getElementById('jornadaGrid').style.display = 'block';
 }
 
 async function toggleCheck(mIdx, objIdx, el) {
-  const saved = await dbSetChecklistItem(currentUser.email, mIdx, objIdx, el.checked);
+  const saved     = await dbSetChecklistItem(currentUser.email, mIdx, objIdx, el.checked);
   el.closest('li').className = el.checked ? 'done-item' : '';
   const total     = MONTHS_DATA[mIdx].objectives.length;
   const doneCount = Object.values(saved).filter(v=>v).length;
   const pct       = Math.round(doneCount/total*100);
-  document.getElementById('detailBar').style.width    = pct + '%';
-  document.getElementById('detailLabel').textContent  = `${doneCount} de ${total} (${pct}%)`;
+  document.getElementById('detailBar').style.width   = pct + '%';
+  document.getElementById('detailLabel').textContent = `${doneCount} de ${total} (${pct}%)`;
 
-  // Mostra botão de solicitação ao atingir 100%
   const studentMIdx = (await dbFindStudent(currentUser.email))?.monthIdx ?? 0;
   if (pct === 100 && mIdx === studentMIdx && mIdx < MONTHS_DATA.length - 1) {
     const already = await dbHasRequest(currentUser.email);
     if (!already && !document.querySelector('.request-advance-btn,.request-pending-block')) {
-      const btn = document.createElement('button');
+      const btn       = document.createElement('button');
       btn.className   = 'request-advance-btn';
       btn.textContent = '📩 Solicitar avanço ao professor';
       btn.onclick     = () => sendAdvanceRequest(mIdx);
@@ -234,7 +232,7 @@ async function sendAdvanceRequest(mIdx) {
   await dbAddRequest(currentUser.email, currentUser.name, mIdx);
   const btn = document.querySelector('.request-advance-btn');
   if (btn) {
-    const div = document.createElement('div');
+    const div       = document.createElement('div');
     div.className   = 'request-pending-block';
     div.textContent = '⏳ Solicitação enviada ao professor. Aguarde a aprovação.';
     btn.replaceWith(div);
@@ -248,34 +246,62 @@ function tplTecnicas() {
     <div class="sec-title">🎯 Técnicas Fundamentais</div>
     <div class="cbox"><h4>1. Posicionamento e Postura</h4>
       <p>A postura define 40% da qualidade do som. <strong>Certifique-se que seus dedos encaixam nas chaves circulares</strong> — não soltos.</p>
-      <ul><li>Flauta paralela ao chão, apoiada no queixo</li><li>Ombros relaxados, cotovelo levemente afastado</li><li>Evitar: postura corcunda, cabeça baixa, pernas cruzadas — prejudicam o diafragma</li></ul>
+      <ul>
+        <li>Flauta paralela ao chão, apoiada no queixo</li>
+        <li>Ombros relaxados, cotovelo levemente afastado</li>
+        <li>Evitar: postura corcunda, cabeça baixa, pernas cruzadas — prejudicam o diafragma</li>
+      </ul>
       <div class="tip">💡 Quanto mais pressão no diafragma, pior o percurso do ar.</div>
     </div>
     <div class="cbox"><h4>2. Embocadura — Produção de Som</h4>
       <p>Todo o som depende do posicionamento e da variação que você faz com a boca em relação ao instrumento.</p>
-      <ul><li>Flauta no meio do lábio inferior — 1/4 dentro da embocadura</li><li>Lábios em "o" natural, sem tensão</li><li>Ar concentrado e constante</li></ul>
+      <ul>
+        <li>Flauta no meio do lábio inferior — 1/4 dentro da embocadura</li>
+        <li>Lábios em "o" natural, sem tensão</li>
+        <li>Ar concentrado e constante</li>
+      </ul>
       <div class="tip">💡 Teste: faça um "psiu" suave. Esse é o ar que entra na flauta.</div>
     </div>
     <div class="cbox"><h4>3. Respiração Diafragmática</h4>
-      <ul><li>Mão na barriga — inspire pelo nariz, abdômen se expande (peito imóvel)</li><li>Expire lentamente em 4 tempos</li><li>Repita 10 vezes antes de tocar</li></ul>
+      <ul>
+        <li>Mão na barriga — inspire pelo nariz, abdômen se expande (peito imóvel)</li>
+        <li>Expire lentamente em 4 tempos</li>
+        <li>Repita 10 vezes antes de tocar</li>
+      </ul>
       <div class="tip">💡 5 minutos de respiração antes de tocar — faça isso diariamente.</div>
     </div>
     <div class="cbox"><h4>4. Notas Longas — Moyse</h4>
       <p>Fundamental para controle da respiração, estabilidade do som e sonoridade rica. Trabalha timbre, afinação e projeção.</p>
-      <ul><li>Pratique <strong>todos os dias</strong> — 30min de controle de som</li><li>Se tiver dificuldade com partitura: escreva, desenhe, cantarole antes de tocar</li><li>Escale: 1ª → 2ª → 3ª oitava</li></ul>
+      <ul>
+        <li>Pratique <strong>todos os dias</strong> — 30min de controle de som</li>
+        <li>Se tiver dificuldade com partitura: escreva, desenhe, cantarole antes de tocar</li>
+        <li>Escale: 1ª → 2ª → 3ª oitava</li>
+      </ul>
       <div class="tip">💡 Referência: "De la Sonorite" de Marcel Moyse.</div>
     </div>
     <div class="cbox"><h4>5. Mecânica — Arpejos e Velocidade</h4>
       <p>Compasso 6/8: conte como 2/2 (1,2,3 — 4,5,6). Isole cada frase, treine isoladamente, evolua com metrônomo.</p>
-      <ul><li>30min diários de arpejos com variações de BPM</li><li>Atenção à afinação nas notas super agudas: Mi, Fá# e Dó</li></ul>
+      <ul>
+        <li>30min diários de arpejos com variações de BPM</li>
+        <li>Atenção à afinação nas notas super agudas: Mi, Fá# e Dó</li>
+      </ul>
       <div class="tip">💡 Constância supera intensidade — 1h concentrada todo dia.</div>
     </div>
     <div class="cbox"><h4>6. Afinação, Projeção e Qualidade Sonora</h4>
-      <ul><li><strong>Afinação:</strong> SoundCorset ou afinador de referência</li><li><strong>Projeção:</strong> pratique em ambientes maiores</li><li><strong>Gravações:</strong> grave, ouça, compare — seja seu próprio professor</li></ul>
+      <ul>
+        <li><strong>Afinação:</strong> SoundCorset ou afinador de referência</li>
+        <li><strong>Projeção:</strong> pratique em ambientes maiores</li>
+        <li><strong>Gravações:</strong> grave, ouça, compare — seja seu próprio professor</li>
+      </ul>
       <div class="tip">💡 Compare "primeira vista" vs "após estudo" — a diferença é enorme.</div>
     </div>
     <div class="cbox"><h4>📱 Ferramentas</h4>
-      <ul><li><strong>SoundCorset</strong> — afinação em tempo real</li><li><strong>Gravador de voz</strong> — registre todas as sessões</li><li><strong>App Jogo das Escalas</strong> — Android e iOS</li><li><strong>Metrônomo</strong> — qualquer app</li></ul>
+      <ul>
+        <li><strong>SoundCorset</strong> — afinação em tempo real</li>
+        <li><strong>Gravador de voz</strong> — registre todas as sessões</li>
+        <li><strong>App Jogo das Escalas</strong> — Android e iOS</li>
+        <li><strong>Metrônomo</strong> — qualquer app</li>
+      </ul>
     </div>
   </div>`;
 }
@@ -285,6 +311,18 @@ function tplEscalas() {
   return `
   <div id="page-escalas" class="page">
     <div class="sec-title">🎼 Escalas & Circuitos</div>
+
+    <!-- Link do App — topo da página -->
+    <a href="https://drive.google.com/file/d/1_Cvr5WTJZGUr_31BgGKGRzRxkxG-4GkD/view"
+       target="_blank" class="app-download-banner">
+      <div class="app-download-icon">🎮</div>
+      <div class="app-download-text">
+        <strong>App Jogo das Escalas</strong>
+        <span>Clique para baixar — treine escalas de forma dinâmica e divertida</span>
+      </div>
+      <div class="app-download-arrow">↗</div>
+    </a>
+
     <div class="cbox">
       <p>Quando o maestro diz <em>"está em Si♭"</em> e vem o <em>"Vai, flauta!!"</em> — você precisa reagir imediatamente.</p>
       <div class="tip">💡 Comece por <strong>Dó Maior</strong>. <strong>Si♭ é a mais importante para o louvor!</strong></div>
@@ -304,12 +342,13 @@ function switchCircuit(circuit, el) {
   if (el) el.classList.add('active');
   document.getElementById('scaleDetail').innerHTML = '';
   renderScalesGrid(circuit);
-
-  const exp = document.getElementById('circuitExplainer');
+  const exp   = document.getElementById('circuitExplainer');
   const items = SCALES_DATA.filter(s => s.circuit === circuit);
   const arrow = circuit === 'fifths' ? '→ quinta ↗' : '→ quarta ↘';
   exp.innerHTML = `
-    <h4>${circuit === 'fifths' ? '🔺 Circuito das Quintas — a 5ª nota vira a 1ª da próxima escala (+1# a cada vez)' : '🔻 Circuito das Quartas — a 4ª nota vira a 1ª da próxima escala (+1♭ a cada vez)'}</h4>
+    <h4>${circuit === 'fifths'
+      ? '🔺 Circuito das Quintas — a 5ª nota vira a 1ª da próxima escala (+1# a cada vez)'
+      : '🔻 Circuito das Quartas — a 4ª nota vira a 1ª da próxima escala (+1♭ a cada vez)'}</h4>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:.75rem">
       ${items.map((s,i) => `
         <span style="background:var(--navy);color:var(--gold2);padding:3px 10px;border-radius:20px;font-size:.8rem;font-weight:600">${s.name}</span>
@@ -363,49 +402,151 @@ function tplLouvor() {
       <div class="tip">💡 "Toque como se estivesse rezando." — Altamiro Carrilho</div>
     </div>
     <div class="cbox"><h4>Hinos por Tonalidade</h4>
-      <ul><li><strong>Si♭ (mais comum):</strong> "Graça Maravilhosa", "Que Glória"</li>
-          <li><strong>Sol:</strong> "Deus é Fiel", "Vou Viver por Jesus"</li>
-          <li><strong>Fá:</strong> "Tu és Digno", "Ressurreição"</li>
-          <li><strong>Mi♭:</strong> "Santo, Santo", "Senhor, Vem"</li></ul>
+      <ul>
+        <li><strong>Si♭ (mais comum):</strong> "Graça Maravilhosa", "Que Glória"</li>
+        <li><strong>Sol:</strong> "Deus é Fiel", "Vou Viver por Jesus"</li>
+        <li><strong>Fá:</strong> "Tu és Digno", "Ressurreição"</li>
+        <li><strong>Mi♭:</strong> "Santo, Santo", "Senhor, Vem"</li>
+      </ul>
+    </div>
+    <div class="cbox"><h4>Dicas de Expressão</h4>
+      <p><strong>Vibrato:</strong> Use em notas longas para adicionar alma à melodia.</p>
+      <p><strong>Pulso interno:</strong> Sincronize com a bateria — ouça, processe e compreenda o tempo.</p>
+      <p><strong>Dinâmica:</strong> Crescendos nos momentos climáticos, suave nos contemplativos.</p>
+      <div class="tip">💡 Acompanhe o louvor no YouTube e pratique junto com o metrônomo.</div>
     </div>
     <div class="cbox"><h4>Prova de Março — 1º Semestre</h4>
-      <ul><li>Mínimo 2 louvores completos</li><li>Controle das oitavas trabalhadas</li><li>Avaliação de embocadura, postura e sonoridade</li></ul>
+      <ul>
+        <li>Mínimo 2 louvores completos</li>
+        <li>Controle das oitavas trabalhadas</li>
+        <li>Avaliação de embocadura, postura e sonoridade</li>
+      </ul>
     </div>
     <div class="cbox"><h4>Prova de Agosto — 2º Semestre</h4>
-      <ul><li>Louvores com partitura</li><li>Leitura à primeira vista</li><li>Peça erudita — Bach, Mozart ou Patápio Silva</li></ul>
+      <ul>
+        <li>Louvores com partitura</li>
+        <li>Leitura à primeira vista</li>
+        <li>Peça erudita — Bach, Mozart ou Patápio Silva</li>
+      </ul>
     </div>
     <div class="cbox"><h4>🎬 Projeto Final — Nov/Dez</h4>
       <p>Gravação em dupla com o professor integrando todos os conteúdos do ano.</p>
+      <div class="tip">💡 Compare sua gravação final com a do início — a evolução vai te surpreender.</div>
     </div>
   </div>`;
 }
 
 // ── DOWNLOADS ────────────────────────────────
 function tplDownloads() {
+  // Cada item: ico, title, desc, e opcionalmente:
+  //   images: [{src, bg}]  → galeria de imagens (bg para transparentes)
+  //   pdf: caminho para o PDF (abre no navegador)
   const items = [
-    { ico:'📄', title:'Guia de Posicionamento',    desc:'PDF com fotos e diagramas de postura e dedilhado.' },
-    { ico:'🎼', title:'Partituras de Escalas',      desc:'Todas as escalas maiores em 3 oitavas.' },
-    { ico:'🎵', title:'Notas Longas — Marcel Moyse',desc:'Exercícios de sonoridade, timbre e afinação.' },
-    { ico:'⏸️', title:'Pausas — "Clamo a Ti"',      desc:'Partitura com compasso 4/4 e ritmos marcados.' },
-    { ico:'⚙️', title:'Mecânica — "Rejubila"',      desc:'Partitura de mecânica em 6/8 com arpejos.' },
-    { ico:'📖', title:'Partitura I (Junho)',         desc:'Apostila de leitura: clave de sol, figuras, 4/4.' },
-    { ico:'📚', title:'Partitura II (Julho)',        desc:'Acidentes, dinâmica, 6/8, primeira vista.' },
-    { ico:'🎻', title:'Peças Clássicas',            desc:'Bach, Mozart e Patápio Silva para o 2º semestre.' },
-    { ico:'🎶', title:'Projeto Harmonia — Trio',    desc:'Material do projeto em 3 flautas (Set/Out).' },
-    { ico:'📋', title:'Plano de Prática Diária',    desc:'Roteiro: escalas + notas longas + mecânica + peça.' },
+    {
+      ico: '📄',
+      title: 'Guia de Posicionamento',
+      desc: 'Posicionamento correto dos dedos nas chaves — correto vs errado.',
+      images: [
+        { src: 'arquivos/posi1.png', bg: '#1a2a1a', label: 'Mão direita' },
+        { src: 'arquivos/posi2.png', bg: '#1a1a2a', label: 'Mão esquerda' },
+        { src: 'arquivos/posi3.png', bg: '#2a1a1a', label: 'Posição completa' },
+      ],
+    },
+    {
+      ico: '🎼',
+      title: 'Partituras de Escalas',
+      desc: 'Todas as escalas maiores em 3 oitavas.',
+      images: [
+        { src: 'arquivos/notasPrtt.png',  bg: '#1a1a2a', label: 'Escalas Parte 1' },
+        { src: 'arquivos/notasPrtt2.png', bg: '#1a1a2a', label: 'Escalas Parte 2' },
+      ],
+    },
+    {
+      ico: '🎵',
+      title: 'Notas Longas — Marcel Moyse',
+      desc: 'Exercícios de sonoridade, timbre e afinação. Pratique todos os dias.',
+      images: [
+        { src: 'arquivos/notasLongas.jpeg', bg: '#f5f0e8', label: 'Exercício de Moyse' },
+      ],
+    },
+    {
+      ico: '⏸️',
+      title: 'Pausas — "Clamo a Ti"',
+      desc: 'Partitura de flauta com compasso 4/4, pausas e ritmos marcados.',
+      pdf: 'arquivos/Clamo a Ti - Flauta.pdf',
+    },
+    {
+      ico: '⚙️',
+      title: 'Mecânica — "Rejubila"',
+      desc: 'Partitura de mecânica em 6/8 com arpejos. Isole cada frase e evolua com metrônomo.',
+      pdf: 'arquivos/Rejubila (oficial).pdf',
+    },
+    {
+      ico: '📖',
+      title: 'Partitura I (Junho)',
+      desc: 'Apostila de leitura: clave de sol, figuras de duração, compasso 4/4.',
+    },
+    {
+      ico: '📚',
+      title: 'Partitura II (Julho)',
+      desc: 'Acidentes, dinâmica, compasso 6/8 e exercícios de primeira vista.',
+    },
+    {
+      ico: '🎻',
+      title: 'Peças Clássicas — Polka Zinha',
+      desc: 'Peça para o 2º semestre — técnica, expressão e leitura avançada.',
+      pdf: 'arquivos/zinha.pdf',
+    },
+    {
+      ico: '🎶',
+      title: 'Projeto Harmonia — Trio',
+      desc: 'Material do projeto em 3 flautas (Setembro e Outubro).',
+    },
+    {
+      ico: '📋',
+      title: 'Plano de Prática Diária',
+      desc: 'Roteiro: escalas + notas longas + mecânica + peça preferida.',
+    },
   ];
+
+  function buildCard(item) {
+    // Galeria de imagens
+    const gallery = item.images ? `
+      <div class="dl-gallery">
+        ${item.images.map(img => `
+          <div class="dl-img-wrap" style="background:${img.bg || '#1a2a1a'}">
+            <img src="${img.src}" alt="${img.label}" loading="lazy"
+                 onerror="this.style.display='none'">
+            <div class="dl-img-label">${img.label}</div>
+          </div>
+        `).join('')}
+      </div>` : '';
+
+    // Botão PDF ou em breve
+    const btn = item.pdf
+      ? `<a class="dl-btn" href="${item.pdf}" target="_blank">📄 Abrir PDF</a>`
+      : item.images
+      ? '' // imagens não precisam de botão
+      : `<button class="dl-btn" onclick="alert('Em breve! O professor disponibilizará este arquivo.')">🔒 Em breve</button>`;
+
+    return `
+    <div class="dl-card">
+      <div class="dl-ico">${item.ico}</div>
+      <div class="dl-title">${item.title}</div>
+      <div class="dl-desc">${item.desc}</div>
+      ${gallery}
+      ${btn}
+    </div>`;
+  }
+
   return `
   <div id="page-downloads" class="page">
     <div class="sec-title">📥 Materiais</div>
-    <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.75rem">PDFs e partituras exclusivos para alunos.</p>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.75rem">
+      PDFs, partituras e imagens exclusivos para alunos.
+    </p>
     <div class="dl-grid">
-      ${items.map(i=>`
-      <div class="dl-card">
-        <div class="dl-ico">${i.ico}</div>
-        <div class="dl-title">${i.title}</div>
-        <div class="dl-desc">${i.desc}</div>
-        <button class="dl-btn" onclick="alert('Em breve! O professor disponibilizará o arquivo.')">Baixar PDF</button>
-      </div>`).join('')}
+      ${items.map(buildCard).join('')}
     </div>
   </div>`;
 }
@@ -458,6 +599,7 @@ function timerSet(min) {
   _timerSec = _timerMax = min * 60;
   timerDraw();
 }
+
 function timerToggle() {
   if (_timerRun) {
     clearInterval(_timerInt); _timerRun = false;
@@ -480,12 +622,14 @@ function timerToggle() {
     }, 1000);
   }
 }
+
 function timerReset() {
   clearInterval(_timerInt); _timerRun = false;
   _timerSec = _timerMax; timerDraw();
   const btn = document.getElementById('timerBtn');
   if (btn) btn.textContent = '▶ Iniciar';
 }
+
 function timerDraw() {
   const el = document.getElementById('timerDisplay');
   if (!el) return;

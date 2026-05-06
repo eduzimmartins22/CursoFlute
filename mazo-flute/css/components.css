@@ -753,3 +753,80 @@
   .add-student-form { flex-direction: column; }
   .add-field { min-width: 100%; }
 }
+
+/* ── App Download Banner (topo da aba Escalas) ── */
+.app-download-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy3) 100%);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  text-decoration: none;
+  color: var(--white);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.app-download-banner:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(201,169,110,0.25);
+}
+.app-download-icon { font-size: 2.5rem; flex-shrink: 0; }
+.app-download-text { flex: 1; }
+.app-download-text strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold2);
+  margin-bottom: 3px;
+}
+.app-download-text span {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+}
+.app-download-arrow {
+  font-size: 1.4rem;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* ── Download Gallery (imagens dentro dos cards) ── */
+.dl-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0.75rem 0;
+}
+.dl-img-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  padding: 8px;
+}
+.dl-img-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+.dl-img-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  margin-top: 5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Cards com galeria ficam mais largos */
+.dl-card:has(.dl-gallery) {
+  grid-column: span 1;
+}
+@media (min-width: 700px) {
+  .dl-card:has(.dl-gallery) {
+    grid-column: span 2;
+  }
+}
