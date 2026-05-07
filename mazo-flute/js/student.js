@@ -481,32 +481,14 @@ function tplDownloads() {
       desc: 'Partitura de mecânica em 6/8 com arpejos. Isole cada frase e evolua com metrônomo.',
       pdf: 'arquivos/Rejubila (oficial).pdf',
     },
-    {
-      ico: '📖',
-      title: 'Partitura I (Junho)',
-      desc: 'Apostila de leitura: clave de sol, figuras de duração, compasso 4/4.',
-    },
-    {
-      ico: '📚',
-      title: 'Partitura II (Julho)',
-      desc: 'Acidentes, dinâmica, compasso 6/8 e exercícios de primeira vista.',
-    },
+
     {
       ico: '🎻',
       title: 'Peças Clássicas — Polka Zinha',
       desc: 'Peça para o 2º semestre — técnica, expressão e leitura avançada.',
       pdf: 'arquivos/zinha.pdf',
     },
-    {
-      ico: '🎶',
-      title: 'Projeto Harmonia — Trio',
-      desc: 'Material do projeto em 3 flautas (Setembro e Outubro).',
-    },
-    {
-      ico: '📋',
-      title: 'Plano de Prática Diária',
-      desc: 'Roteiro: escalas + notas longas + mecânica + peça preferida.',
-    },
+
   ];
 
   function buildCard(item) {
