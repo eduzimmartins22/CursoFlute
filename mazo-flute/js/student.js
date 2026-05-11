@@ -12,7 +12,7 @@ function buildStudentNav() {
     <button class="nav-tab" onclick="navTo('jornada',this)">📅 Jornada</button>
     <button class="nav-tab" onclick="navTo('tecnicas',this)">🎯 Técnicas</button>
     <button class="nav-tab" onclick="navTo('escalas',this)">🎼 Escalas</button>
-   
+    <button class="nav-tab" onclick="navTo('louvor',this)">✨ Louvor</button>
     <button class="nav-tab" onclick="navTo('downloads',this)">📥 Downloads</button>
     <button class="nav-tab" onclick="navTo('timer',this)">⏱️ Timer</button>`;
 }

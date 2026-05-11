@@ -29,11 +29,7 @@ const MONTHS_DATA = [
   },
   { num:2,  name:'Fevereiro', emoji:'🎶', tag:'1ª, 2ª e 3ª Oitava', desc:'Expansão do registro — domínio das três oitavas.',           pillar:'Prática',
     fullDesc:'Com a base de janeiro, você expande o alcance passando pelas oitavas. A passagem exige controle de ar e lábio.',
-    objectives:
-    ['Dominar completamente a 1ª oitava','Notas longas de Moyse — controle de sonoridade',
-      'Passagem para a 2ª oitava com controle de ar','Início das notas da 3ª oitava','Ligaduras entre oitavas',
-      'Escalas de Dó e Sol Maior nas 3 oitavas','Prática diária com metrônomo e gravação'],
-
+    objectives:['Dominar completamente a 1ª oitava','Notas longas de Moyse — controle de sonoridade','Passagem para a 2ª oitava com controle de ar','Início das notas da 3ª oitava','Ligaduras entre oitavas','Escalas de Dó e Sol Maior nas 3 oitavas','Prática diária com metrônomo e gravação'],
     tip:'A passagem de oitava se vence com paciência. Aumente a velocidade do ar, não a pressão dos lábios.' },
   { num:3,  name:'Março',     emoji:'🎤', tag:'Prova 1º Semestre',  desc:'Louvores aplicados + avaliação do 1º semestre.',            pillar:'Constância',
     fullDesc:'Integre o aprendizado no contexto do louvor. O mês fecha com a prova do primeiro semestre.',

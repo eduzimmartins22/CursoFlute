@@ -43,6 +43,7 @@ const UI = (() => {
       { page: 'jornada',   label: '📅 Jornada'      },
       { page: 'tecnicas',  label: '🎯 Técnicas'     },
       { page: 'escalas',   label: '🎼 Escalas'      },
+      { page: 'louvor',    label: '✨ Louvor'        },
       { page: 'downloads', label: '📥 Downloads'    },
       { page: 'timer',     label: '⏱️ Timer'        },
     ];
