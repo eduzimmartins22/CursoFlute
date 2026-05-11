@@ -392,49 +392,7 @@ function showScale(key, el) {
   document.getElementById('scaleDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// ── LOUVOR ───────────────────────────────────
-function tplLouvor() {
-  return `
-  <div id="page-louvor" class="page">
-    <div class="sec-title">✨ Repertório de Louvor</div>
-    <div class="cbox"><h4>Tocando com Excelência</h4>
-      <p>A flauta é um instrumento de oração — cada nota deve carregar intenção espiritual.</p>
-      <div class="tip">💡 "Toque como se estivesse rezando." — Altamiro Carrilho</div>
-    </div>
-    <div class="cbox"><h4>Hinos por Tonalidade</h4>
-      <ul>
-        <li><strong>Si♭ (mais comum):</strong> "Graça Maravilhosa", "Que Glória"</li>
-        <li><strong>Sol:</strong> "Deus é Fiel", "Vou Viver por Jesus"</li>
-        <li><strong>Fá:</strong> "Tu és Digno", "Ressurreição"</li>
-        <li><strong>Mi♭:</strong> "Santo, Santo", "Senhor, Vem"</li>
-      </ul>
-    </div>
-    <div class="cbox"><h4>Dicas de Expressão</h4>
-      <p><strong>Vibrato:</strong> Use em notas longas para adicionar alma à melodia.</p>
-      <p><strong>Pulso interno:</strong> Sincronize com a bateria — ouça, processe e compreenda o tempo.</p>
-      <p><strong>Dinâmica:</strong> Crescendos nos momentos climáticos, suave nos contemplativos.</p>
-      <div class="tip">💡 Acompanhe o louvor no YouTube e pratique junto com o metrônomo.</div>
-    </div>
-    <div class="cbox"><h4>Prova de Março — 1º Semestre</h4>
-      <ul>
-        <li>Mínimo 2 louvores completos</li>
-        <li>Controle das oitavas trabalhadas</li>
-        <li>Avaliação de embocadura, postura e sonoridade</li>
-      </ul>
-    </div>
-    <div class="cbox"><h4>Prova de Agosto — 2º Semestre</h4>
-      <ul>
-        <li>Louvores com partitura</li>
-        <li>Leitura à primeira vista</li>
-        <li>Peça erudita — Bach, Mozart ou Patápio Silva</li>
-      </ul>
-    </div>
-    <div class="cbox"><h4>🎬 Projeto Final — Nov/Dez</h4>
-      <p>Gravação em dupla com o professor integrando todos os conteúdos do ano.</p>
-      <div class="tip">💡 Compare sua gravação final com a do início — a evolução vai te surpreender.</div>
-    </div>
-  </div>`;
-}
+
 
 // ── DOWNLOADS ────────────────────────────────
 function tplDownloads() {
