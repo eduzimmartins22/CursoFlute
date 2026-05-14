@@ -403,9 +403,9 @@ function tplDownloads() {
       title: 'Guia de Posicionamento',
       desc: 'Posicionamento correto dos dedos nas chaves — correto vs errado.',
       images: [
-        { src: 'arquivos/posi1.png', bg: '#1a2a1a', label: 'Mão direita' },
-        { src: 'arquivos/posi2.png', bg: '#1a1a2a', label: 'Mão esquerda' },
-        { src: 'arquivos/posi3.png', bg: '#2a1a1a', label: 'Posição completa' },
+        { src: 'arquivos/posi1.png', bg: '#1a2a1a', label: 'Mãos' },
+        { src: 'arquivos/posi2.png', bg: '#1a1a2a', label: 'Embocadura' },
+        { src: 'arquivos/posi3.png', bg: '#2a1a1a', label: 'Posição Corporal' },
       ],
     },
     {
@@ -413,8 +413,8 @@ function tplDownloads() {
       title: 'Partituras de Escalas',
       desc: 'Todas as escalas maiores em 3 oitavas.',
       images: [
-        { src: 'arquivos/notasPrtt.png',  bg: '#1a1a2a', label: 'Escalas Parte 1' },
-        { src: 'arquivos/notasPrtt2.png', bg: '#1a1a2a', label: 'Escalas Parte 2' },
+        { src: 'arquivos/notasPrtt.png',  bg: '#1a1a2a', label: 'Posição Notas' },
+        { src: 'arquivos/notasPrtt2.png', bg: '#1a1a2a', label: 'Notas Partitura' },
       ],
     },
     {
