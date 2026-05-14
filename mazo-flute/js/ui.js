@@ -43,7 +43,6 @@ const UI = (() => {
       { page: 'jornada',   label: '📅 Jornada'      },
       { page: 'tecnicas',  label: '🎯 Técnicas'     },
       { page: 'escalas',   label: '🎼 Escalas'      },
-      { page: 'louvor',    label: '✨ Louvor'        },
       { page: 'downloads', label: '📥 Downloads'    },
       { page: 'timer',     label: '⏱️ Timer'        },
     ];
@@ -78,7 +77,6 @@ const UI = (() => {
       _tplPageJornada(user)  +
       _tplPageTecnicas()     +
       _tplPageEscalas()      +
-      _tplPageLouvor()       +
       _tplPageDownloads()    +
       _tplPageTimer();
 
@@ -296,56 +294,6 @@ const UI = (() => {
     </div>`;
   }
 
-  function _tplPageLouvor() {
-    return `
-    <div id="page-louvor" class="page">
-      <div class="sec-title">✨ Repertório de Louvor</div>
-      <div class="cbox">
-        <h4>Tocando Louvor com Excelência</h4>
-        <p>O louvor exige sensibilidade, entendimento harmônico e expressão emocional profunda. A flauta é um instrumento de oração — cada nota deve carregar intenção espiritual.</p>
-        <div class="tip">💡 "Toque como se estivesse rezando. A música é conversa com o divino." — Altamiro Carrilho</div>
-      </div>
-      <div class="cbox">
-        <h4>Hinos por Tonalidade</h4>
-        <ul>
-          <li><strong>Si♭ Maior (mais comum):</strong> "Graça Maravilhosa", "Que Glória"</li>
-          <li><strong>Sol Maior:</strong> "Deus é Fiel", "Vou Viver por Jesus"</li>
-          <li><strong>Fá Maior:</strong> "Tu és Digno", "Ressurreição"</li>
-          <li><strong>Mi♭ Maior:</strong> "Santo, Santo", "Senhor, Vem"</li>
-        </ul>
-      </div>
-      <div class="cbox">
-        <h4>Dicas de Expressão no Louvor</h4>
-        <p><strong>1. Vibrato:</strong> Use em notas longas para adicionar alma à melodia.</p>
-        <p><strong>2. Respiração:</strong> Faça pequenas respirações entre frases para manter o fluxo.</p>
-        <p><strong>3. Dinâmica:</strong> Crescendos sutis em momentos climáticos. Reduza em momentos contemplativos.</p>
-        <p><strong>4. Pulso interno:</strong> Para tocar é essencial ouvir, processar e compreender o tempo e a base rítmica. Sincronize com a bateria.</p>
-        <div class="tip">💡 Acompanhe o louvor no YouTube e pratique junto com o metrônomo para entender as pausas e o quanto tempo cada figura significa.</div>
-      </div>
-      <div class="cbox">
-        <h4>Prova de Março — 1º Semestre</h4>
-        <ul>
-          <li>Ao menos 2 louvores completos com boa fluidez</li>
-          <li>Demonstrar controle das oitavas trabalhadas</li>
-          <li>Avaliação de embocadura, postura e sonoridade</li>
-        </ul>
-        <div class="tip">💡 Escolha louvores que você já conhece musicalmente — isso libera o foco para a técnica.</div>
-      </div>
-      <div class="cbox">
-        <h4>Prova de Agosto — 2º Semestre</h4>
-        <ul>
-          <li>Prova 1: Louvores com partitura (fluência e expressão)</li>
-          <li>Prova 2: Leitura de louvor à primeira vista</li>
-          <li>Prova 3: Trecho de peça erudita — Bach, Mozart ou Patápio Silva</li>
-        </ul>
-      </div>
-      <div class="cbox">
-        <h4>🎬 Projeto Final — Novembro/Dezembro</h4>
-        <p>Gravação de um louvor em dupla com o professor, integrando todos os conteúdos treinados no ano: técnica, partitura, harmonia e expressão.</p>
-        <div class="tip">💡 Compare sua gravação final com a do início do curso — você vai se surpreender com o quanto evoluiu.</div>
-      </div>
-    </div>`;
-  }
 
   function _tplPageDownloads() {
     const items = [
@@ -1001,4 +949,4 @@ const UI = (() => {
     removeStudent,
     togglePassView,
   };
-
+})();
