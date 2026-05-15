@@ -15,6 +15,7 @@ const UI = (() => {
     await _buildAllPages(user);
     goPage('inicio');
     Timer.init();
+    Metronome.init();
   }
 
   async function initProfessor(user) {
@@ -335,7 +336,54 @@ const UI = (() => {
   function _tplPageTimer() {
     return `
     <div id="page-timer" class="page">
-      <div class="sec-title">⏱️ Timer de Prática</div>
+
+      <!-- ══ METRÔNOMO ══ -->
+      <div class="sec-title">🎵 Metrônomo</div>
+      <div class="metro-block">
+
+        <!-- Indicador visual de beats -->
+        <div class="metro-beats" id="metroBeats"></div>
+
+        <!-- Display de BPM -->
+        <div class="metro-bpm-display" id="metroBpmDisplay">80 BPM</div>
+
+        <!-- Slider + botões de ajuste fino -->
+        <div class="metro-bpm-control">
+          <button class="metro-adj-btn" onclick="Metronome.adjustBpm(-10)">−10</button>
+          <button class="metro-adj-btn" onclick="Metronome.adjustBpm(-1)">−1</button>
+          <input type="range" id="metroBpmSlider" min="40" max="240" value="80"
+                 oninput="Metronome.setBpm(+this.value)" class="metro-slider">
+          <button class="metro-adj-btn" onclick="Metronome.adjustBpm(+1)">+1</button>
+          <button class="metro-adj-btn" onclick="Metronome.adjustBpm(+10)">+10</button>
+        </div>
+
+        <!-- Seleção de compasso -->
+        <div class="metro-compass-row">
+          <span class="metro-compass-label">Compasso:</span>
+          <button class="metro-sig-btn active" id="metroSig44" onclick="Metronome.setSignature('4/4')">4/4</button>
+          <button class="metro-sig-btn" id="metroSig68" onclick="Metronome.setSignature('6/8')">6/8</button>
+        </div>
+
+        <!-- Presets de BPM -->
+        <div class="metro-presets">
+          <button class="preset-btn" onclick="Metronome.setBpmPreset(60)">60</button>
+          <button class="preset-btn" onclick="Metronome.setBpmPreset(80)">80</button>
+          <button class="preset-btn" onclick="Metronome.setBpmPreset(100)">100</button>
+          <button class="preset-btn" onclick="Metronome.setBpmPreset(120)">120</button>
+          <button class="preset-btn" onclick="Metronome.setBpmPreset(140)">140</button>
+          <button class="preset-btn" onclick="Metronome.setBpmPreset(160)">160</button>
+        </div>
+
+        <!-- Botões play/stop -->
+        <div class="metro-ctrl-row">
+          <button class="ctrl-btn" id="metroToggleBtn" onclick="Metronome.toggle()">▶ Iniciar</button>
+          <button class="ctrl-btn ctrl-btn--secondary" onclick="Metronome.stop()">⏹ Parar</button>
+        </div>
+
+      </div>
+
+      <!-- ══ TIMER ══ -->
+      <div class="sec-title" style="margin-top:2rem">⏱️ Timer de Prática</div>
       <div class="timer-block">
         <div class="timer-display" id="timerDisplay">30:00</div>
         <div class="timer-presets">
@@ -364,7 +412,7 @@ const UI = (() => {
           <li><input type="checkbox" id="dc1" onchange="UI.checkDay()"><span>Sons longos e aquecimento (5 min)</span></li>
           <li><input type="checkbox" id="dc2" onchange="UI.checkDay()"><span>Exercícios de respiração diafragmática</span></li>
           <li><input type="checkbox" id="dc3" onchange="UI.checkDay()"><span>Escalas do módulo atual (app)</span></li>
-          <li><input type="checkbox" id="dc4" onchange="UI.checkDay()"><span>Louvor ou peça da semana</span></li>
+          <li><input type="checkbox" id="dc4" onchange="UI.checkDay()"><span>Peça da semana</span></li>
         </ul>
       </div>
     </div>`;
