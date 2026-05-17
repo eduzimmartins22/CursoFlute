@@ -69,18 +69,7 @@ function tplInicio(student, m, mIdx, streak) {
     </div>
     <div class="sec-title">🗺️ Trilha do Curso</div>
     <div class="cbox"><div id="timeline"></div></div>
-    <div class="sec-title">🎯 Comece por Aqui</div>
-    <div class="cards-grid">
-      <div class="card" onclick="navTo('jornada',document.querySelectorAll('.nav-tab')[1])">
-        <div class="card-ico">📅</div><h3>Minha Jornada</h3><p>Acesse o conteúdo do seu módulo atual.</p>
-      </div>
-      <div class="card" onclick="navTo('tecnicas',document.querySelectorAll('.nav-tab')[2])">
-        <div class="card-ico">💨</div><h3>Técnicas</h3><p>Embocadura, respiração e dedilhado.</p>
-      </div>
-      <div class="card" onclick="navTo('escalas',document.querySelectorAll('.nav-tab')[3])">
-        <div class="card-ico">🎼</div><h3>Escalas</h3><p>Circuito das Quintas e das Quartas.</p>
-      </div>
-    </div>
+  </div>
   </div>`;
 }
 
@@ -96,7 +85,7 @@ function renderTimeline(mIdx) {
     <div class="tl-item ${cls}">
       <div class="tl-dot">${m.emoji}</div>
       <div class="tl-body">
-        <div class="tl-month">${m.name}</div>
+        <div class="tl-month">Nível ${i + 1}</div>
         <h3>${m.tag}</h3>
         <p>${m.desc}</p>
         <span class="tl-status ${sCls}">${status}</span>
@@ -138,7 +127,7 @@ function renderMonthsGrid(student, mIdx) {
     <div class="month-card ${cls}" ${click}>
       ${badge}
       <div class="mc-num">${m.num}</div>
-      <div class="mc-name">${m.name}</div>
+      <div class="mc-name">Nível ${i + 1}</div>
       <div class="mc-tag">${m.tag}</div>
     </div>`;
   }).join('');
@@ -176,7 +165,7 @@ async function openMonthDetail(idx) {
 
   document.getElementById('monthDetailContent').innerHTML = `
     <div class="month-hero" data-num="${m.num}">
-      <div class="month-hero-badge">${m.name} · ${m.tag} · ${m.pillar}</div>
+      <div class="month-hero-badge">Nível ${idx + 1} · ${m.tag} · ${m.pillar}</div>
       <h2>${m.emoji} ${m.tag}</h2>
       <p>${m.fullDesc}</p>
     </div>
@@ -403,8 +392,8 @@ function tplDownloads() {
       title: 'Guia de Posicionamento',
       desc: 'Posicionamento correto dos dedos nas chaves — correto vs errado.',
       images: [
-        { src: 'arquivos/posi1.png', bg: '#1a2a1a', label: 'Mão direita' },
-        { src: 'arquivos/posi2.png', bg: '#1a1a2a', label: 'Mão esquerda' },
+        { src: 'arquivos/posi1.png', bg: '#1a2a1a', label: 'Mãos' },
+        { src: 'arquivos/posi2.png', bg: '#1a1a2a', label: 'Embocadura' },
         { src: 'arquivos/posi3.png', bg: '#2a1a1a', label: 'Posição completa' },
       ],
     },
@@ -413,8 +402,8 @@ function tplDownloads() {
       title: 'Partituras de Escalas',
       desc: 'Todas as escalas maiores em 3 oitavas.',
       images: [
-        { src: 'arquivos/notasPrtt.png',  bg: '#1a1a2a', label: 'Escalas Parte 1' },
-        { src: 'arquivos/notasPrtt2.png', bg: '#1a1a2a', label: 'Escalas Parte 2' },
+        { src: 'arquivos/notasPrtt.png',  bg: '#1a1a2a', label: 'Posicionamento das Notas' },
+        { src: 'arquivos/notasPrtt2.png', bg: '#1a1a2a', label: 'Notas Partitura' },
       ],
     },
     {
@@ -459,7 +448,11 @@ function tplDownloads() {
       // Cada imagem vira um botão que abre modal
       btns = item.images.map(img => {
         const safeId = img.label.replace(/[^a-zA-Z0-9]/g, '_');
-        return `<button class="dl-btn dl-btn--img" onclick="openModal('${safeId}')">🖼️ ${img.label}</button>`;
+        const ext = img.src.split('.').pop();
+        return `<div class="dl-btn-pair">
+          <button class="dl-btn dl-btn--img" onclick="openModal('${safeId}')">🖼️ ${img.label}</button>
+          <a class="dl-btn dl-btn--download" href="${img.src}" download="${img.label}.${ext}">⬇️ Baixar</a>
+        </div>`;
       }).join('');
     } else {
       btns = `<button class="dl-btn dl-btn--soon" disabled>🔒 Em breve</button>`;
@@ -613,15 +606,6 @@ function tplTimer() {
         <li><strong>30 min</strong> — Peça preferida (Tico-tico, Bach, Ian Clarke…)</li>
       </ul>
       <div class="tip">💡 Treine todos os dias — constância supera intensidade.</div>
-    </div>
-    <div class="sec-title" style="margin-top:2rem">📝 Checklist de Hoje</div>
-    <div class="cbox">
-      <ul class="day-checklist">
-        <li><input type="checkbox" id="dc1" onchange="checkDay()"><span>Sons longos e aquecimento</span></li>
-        <li><input type="checkbox" id="dc2" onchange="checkDay()"><span>Respiração diafragmática</span></li>
-        <li><input type="checkbox" id="dc3" onchange="checkDay()"><span>Escalas do módulo atual</span></li>
-        <li><input type="checkbox" id="dc4" onchange="checkDay()"><span>Peça da semana</span></li>
-      </ul>
     </div>
   </div>`;
 }

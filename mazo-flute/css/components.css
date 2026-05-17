@@ -396,6 +396,18 @@
   transition: background 0.2s;
 }
 .dl-btn:hover { background: var(--navy3); }
+.dl-btn-pair {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.dl-btn--download {
+  background: linear-gradient(135deg, var(--gold3), var(--gold));
+  color: var(--navy);
+  text-decoration: none;
+}
+.dl-btn--download:hover { background: var(--gold2); color: var(--navy); }
+
 
 /* ---- Timer ---- */
 .timer-block {
