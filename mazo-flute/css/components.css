@@ -1032,3 +1032,14 @@
 @media (max-width: 600px) {
   .dl-modal-box--pdf { height: 92vh; }
 }
+
+/* ── Aba destacada de agendamento ── */
+.nav-tab--highlight {
+  color: var(--gold3) !important;
+  border-bottom: 2px solid var(--gold3);
+  font-weight: 600;
+}
+.nav-tab--highlight.active {
+  color: var(--gold) !important;
+  border-bottom-color: var(--gold);
+}

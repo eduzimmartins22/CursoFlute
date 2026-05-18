@@ -4,68 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mazo Flute — Curso de Flauta Transversal</title>
-
-  <!-- FAVICON -->
   <link rel="icon" type="image/png" href="arquivos/mazoLogo.png">
-
-  <!-- CSS -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/scheduling.css">
 </head>
-
 <body>
+
+<!-- Toast agendamento -->
+<div id="schedToast"></div>
 
 <!-- LOGIN -->
 <div id="loginScreen" style="position:fixed;inset:0;z-index:9000;background:var(--navy);display:flex;align-items:center;justify-content:center">
   <div class="login-wrap">
     <div class="login-card">
-
       <div class="login-logo">
         <img src="arquivos/mazoLogo.png" alt="Mazo Flute" class="login-logo-img">
         <h1>Mazo Flute</h1>
         <p>Curso de Flauta Transversa</p>
       </div>
-
       <div class="login-tabs">
         <button class="login-tab active" onclick="switchLoginTab('student',this)">🎵 Aluno</button>
         <button class="login-tab" onclick="switchLoginTab('professor',this)">🎓 Professor</button>
       </div>
-
       <div class="field">
         <label id="loginLabelUser">Email</label>
-        <input type="text" id="loginUser" placeholder="seu@email.com"
-               onkeydown="if(event.key==='Enter') doLogin()">
+        <input type="text" id="loginUser" placeholder="seu@email.com" onkeydown="if(event.key==='Enter') doLogin()">
       </div>
-
       <div class="field">
         <label id="loginLabelPass">Senha</label>
-        <input type="password" id="loginPass" placeholder="••••••••"
-               onkeydown="if(event.key==='Enter') doLogin()">
+        <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()">
       </div>
-
       <p class="login-err" id="loginErr"></p>
-
       <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
-
-      <div class="demo-note" id="loginDemoNote">
-        Use o email e senha definidos pelo professor.
-      </div>
-
+      <div class="demo-note" id="loginDemoNote">Use o email e senha definidos pelo professor.</div>
     </div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app" style="display:none">
-
-  <!-- HEADER -->
   <header>
     <div class="hdr-brand">
       <img src="arquivos/mazoLogo.png" alt="Mazo Flute" class="logo-img">
       <span class="brand-text">Mazo Flute</span>
     </div>
-
     <div class="hdr-right">
       <div class="avatar" id="hAvatar">??</div>
       <div>
@@ -75,32 +59,30 @@
       </div>
     </div>
   </header>
-
-  <!-- NAV -->
   <nav class="nav-bar" id="navBar"></nav>
-
-  <!-- MAIN -->
   <main class="container">
     <div id="pagesContainer"></div>
   </main>
-
 </div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <!-- Scripts -->
 <script src="js/data.js"></script>
 <script src="js/db.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/metronome.js"></script>
+<script src="js/scheduling.js"></script>
 <script src="js/student.js"></script>
 <script src="js/professor.js"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => checkSession());
 </script>
-
 </body>
 </html>
