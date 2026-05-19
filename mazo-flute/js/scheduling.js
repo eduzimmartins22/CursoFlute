@@ -358,14 +358,19 @@ function tplProfAgendamentos() {
           <select class="sched-filter" id="fStudent" onchange="filterTable()">
             <option value="">Todos os alunos</option>
           </select>
+          <select class="sched-filter" id="fRole" onchange="filterTable()">
+            <option value="">Alunos + Visitantes</option>
+            <option value="student">Só Alunos</option>
+            <option value="visitor">Só Visitantes</option>
+          </select>
         </div>
         <span class="sched-count" id="tableCount"></span>
       </div>
       <div style="overflow-x:auto">
         <table class="students-table" id="bookingsTable">
           <thead><tr>
-            <th>Aluno</th><th>Data</th><th>Horário</th>
-            <th>Plano</th><th>Valor</th><th>Status</th><th>Ações</th>
+            <th>Nome</th><th>Data</th><th>Horário</th>
+            <th>Plano</th><th>Valor</th><th>Tipo</th><th>Status</th><th>Ações</th>
           </tr></thead>
           <tbody id="bookingsBody"></tbody>
         </table>
@@ -392,7 +397,8 @@ function _renderProfStats(bookings) {
   const today   = _fmtDate(new Date());
   const upcoming= conf.filter(b => b.slotDate >= today);
   const rev     = conf.reduce((s,b) => s+(b.price||0), 0);
-  const studs   = new Set(bookings.map(b => b.studentEmail)).size;
+  const studs    = new Set(bookings.filter(b=>(b.role||'student')==='student').map(b => b.studentEmail)).size;
+  const visitors = bookings.filter(b => b.role === 'visitor').length;
 
   document.getElementById('profSchedStats').innerHTML = `
     <div class="prof-stat"><div class="prof-stat-num">${bookings.length}</div><div class="prof-stat-label">Total de Aulas</div></div>
@@ -400,6 +406,7 @@ function _renderProfStats(bookings) {
     <div class="prof-stat"><div class="prof-stat-num">${upcoming.length}</div><div class="prof-stat-label">Próximas</div></div>
     <div class="prof-stat"><div class="prof-stat-num">${canc.length}</div><div class="prof-stat-label">Canceladas</div></div>
     <div class="prof-stat"><div class="prof-stat-num">${studs}</div><div class="prof-stat-label">Alunos</div></div>
+    <div class="prof-stat" style="border-color:rgba(201,169,110,0.4)"><div class="prof-stat-num" style="color:var(--gold2)">${visitors}</div><div class="prof-stat-label">Visitantes</div></div>
     <div class="prof-stat" style="border-color:var(--gold)"><div class="prof-stat-num" style="color:var(--gold3)">R$${rev}</div><div class="prof-stat-label">Receita Total</div></div>`;
 }
 
@@ -496,19 +503,23 @@ function filterTable() {
   const st   = document.getElementById('fStatus')?.value  || '';
   const pl   = document.getElementById('fPlan')?.value    || '';
   const eml  = document.getElementById('fStudent')?.value || '';
+  const role = document.getElementById('fRole')?.value    || '';
 
   const filtered = _allBookings.filter(b =>
-    (!st  || b.status         === st ) &&
-    (!pl  || b.plan           === pl ) &&
-    (!eml || b.studentEmail   === eml)
+    (!st   || b.status       === st ) &&
+    (!pl   || b.plan         === pl ) &&
+    (!eml  || b.studentEmail === eml) &&
+    (!role || (b.role||'student')    === role)
   );
 
-  document.getElementById('tableCount').textContent = `${filtered.length} aulas`;
+  const visCount  = filtered.filter(b=>(b.role||'student')==='visitor').length;
+  const studCount = filtered.length - visCount;
+  document.getElementById('tableCount').textContent = `${filtered.length} aulas${visCount>0?' ('+visCount+' visitantes)':''}`;
 
   const tbody = document.getElementById('bookingsBody');
   if (!tbody) return;
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="ico">📅</div><p>Nenhum agendamento encontrado.</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="ico">📅</div><p>Nenhum agendamento encontrado.</p></div></td></tr>`;
     return;
   }
 
@@ -517,16 +528,28 @@ function filterTable() {
   const sLabel = { confirmed:'✓ Confirmada', canceled:'✗ Cancelada', pending:'⏳ Pendente' };
 
   tbody.innerHTML = filtered.map(b => {
-    const d      = new Date(b.slotDate+'T12:00:00');
-    const dateStr= d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
-    const isPast = b.slotDate < today;
+    const d       = new Date(b.slotDate+'T12:00:00');
+    const dateStr = d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+    const isPast  = b.slotDate < today;
+    const isVisitor = (b.role||'student') === 'visitor';
+    // Tooltip com dados extras do visitante
+    const visitorDetail = isVisitor ? `
+      📞 ${b.phone||'—'} &nbsp;|&nbsp; CPF: ${b.cpf||'—'} &nbsp;|&nbsp;
+      📍 ${b.city||''}/${b.state||''} &nbsp;|&nbsp;
+      🎵 ${b.playsFlute ? 'Toca flauta ('+b.experience+' ano'+((b.experience||0)!==1?'s':'')+')'  : 'Nunca tocou'}
+    ` : '';
     return `
-    <tr>
-      <td><div class="student-name">${b.studentName||'—'}</div><div class="student-email">${b.studentEmail||''}</div></td>
+    <tr${isVisitor?' style="background:rgba(201,169,110,0.04)"':''}>
+      <td>
+        <div class="student-name">${b.studentName||'—'}${isVisitor?' <span class="visitor-tag">Visitante</span>':''}</div>
+        <div class="student-email">${b.studentEmail||''}</div>
+        ${isVisitor?`<div class="visitor-detail">${visitorDetail}</div>`:''}
+      </td>
       <td style="font-size:.85rem">${dateStr}</td>
       <td style="font-weight:600">${b.slotTime}</td>
       <td><span class="badge badge--gold" style="font-size:.7rem">${PLAN_DATA[b.plan]?.label||b.plan}</span></td>
       <td style="font-weight:600;color:var(--gold3)">R$${b.price||0}</td>
+      <td><span class="badge ${isVisitor?'badge--visitor':'badge--student'}" style="font-size:.7rem">${isVisitor?'👤 Visitante':'🎵 Aluno'}</span></td>
       <td><span class="badge ${sCls[b.status]||'badge'}" style="font-size:.7rem">${sLabel[b.status]||b.status}</span></td>
       <td style="display:flex;gap:6px;padding:8px;flex-wrap:wrap">
         ${b.status==='confirmed'&&!isPast

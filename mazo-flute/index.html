@@ -12,38 +12,138 @@
 </head>
 <body>
 
-<!-- Toast agendamento -->
+<!-- Toast -->
 <div id="schedToast"></div>
 
-<!-- LOGIN -->
-<div id="loginScreen" style="position:fixed;inset:0;z-index:9000;background:var(--navy);display:flex;align-items:center;justify-content:center">
-  <div class="login-wrap">
-    <div class="login-card">
-      <div class="login-logo">
-        <img src="arquivos/mazoLogo.png" alt="Mazo Flute" class="login-logo-img">
-        <h1>Mazo Flute</h1>
-        <p>Curso de Flauta Transversa</p>
+<!-- ════════════════════════════════════════════
+     TELA DE LOGIN
+════════════════════════════════════════════ -->
+<div id="loginScreen">
+
+  <div class="ls-layout">
+
+    <!-- ── COLUNA ESQUERDA: Login ── -->
+    <div class="ls-left">
+      <div class="login-card">
+        <div class="login-logo">
+          <img src="arquivos/mazoLogo.png" alt="Mazo Flute" class="login-logo-img">
+          <h1>Mazo Flute</h1>
+          <p>Curso de Flauta Transversa</p>
+        </div>
+        <div class="login-tabs">
+          <button class="login-tab active" onclick="switchLoginTab('student',this)">🎵 Aluno</button>
+          <button class="login-tab" onclick="switchLoginTab('professor',this)">🎓 Professor</button>
+        </div>
+        <div class="field">
+          <label id="loginLabelUser">Email</label>
+          <input type="text" id="loginUser" placeholder="seu@email.com" onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <div class="field">
+          <label id="loginLabelPass">Senha</label>
+          <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <p class="login-err" id="loginErr"></p>
+        <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
+        <div class="demo-note" id="loginDemoNote">Use o email e senha definidos pelo professor.</div>
       </div>
-      <div class="login-tabs">
-        <button class="login-tab active" onclick="switchLoginTab('student',this)">🎵 Aluno</button>
-        <button class="login-tab" onclick="switchLoginTab('professor',this)">🎓 Professor</button>
-      </div>
-      <div class="field">
-        <label id="loginLabelUser">Email</label>
-        <input type="text" id="loginUser" placeholder="seu@email.com" onkeydown="if(event.key==='Enter') doLogin()">
-      </div>
-      <div class="field">
-        <label id="loginLabelPass">Senha</label>
-        <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()">
-      </div>
-      <p class="login-err" id="loginErr"></p>
-      <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
-      <div class="demo-note" id="loginDemoNote">Use o email e senha definidos pelo professor.</div>
     </div>
+
+    <!-- ── DIVISOR ── -->
+    <div class="ls-divider">
+      <div class="ls-divider-line"></div>
+      <span class="ls-divider-text">ou</span>
+      <div class="ls-divider-line"></div>
+    </div>
+
+    <!-- ── COLUNA DIREITA: Visitante ── -->
+    <div class="ls-right">
+      <div class="visitor-card">
+        <div class="visitor-header">
+          <div class="visitor-badge">✨ Sem cadastro</div>
+          <h2>Agende uma Aula Experimental</h2>
+          <p>Preencha os dados abaixo e escolha um horário disponível. Sem compromisso!</p>
+        </div>
+
+        <!-- Etapa 1: Dados -->
+        <div id="visitorStep1">
+          <div class="field">
+            <label>Nome completo</label>
+            <input type="text" id="vName" placeholder="Seu nome">
+          </div>
+          <div class="visitor-row">
+            <div class="field">
+              <label>Email</label>
+              <input type="email" id="vEmail" placeholder="seu@email.com">
+            </div>
+            <div class="field">
+              <label>WhatsApp</label>
+              <input type="tel" id="vPhone" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+          <div class="field">
+            <label>CPF</label>
+            <input type="text" id="vCpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCpf(this)">
+          </div>
+          <div class="visitor-row">
+            <div class="field">
+              <label>Cidade</label>
+              <input type="text" id="vCity" placeholder="São Paulo">
+            </div>
+            <div class="field">
+              <label>Estado</label>
+              <input type="text" id="vState" placeholder="SP" maxlength="2" style="text-transform:uppercase">
+            </div>
+          </div>
+          <div class="visitor-row">
+            <div class="field">
+              <label>Já toca flauta?</label>
+              <select id="vPlays" class="visitor-select">
+                <option value="nao">Não</option>
+                <option value="sim">Sim</option>
+              </select>
+            </div>
+            <div class="field" id="vExpField" style="display:none">
+              <label>Anos de experiência</label>
+              <input type="number" id="vExp" placeholder="Ex: 2" min="0" max="50">
+            </div>
+          </div>
+          <button class="visitor-next-btn" onclick="visitorGoToCalendar()">Ver horários disponíveis →</button>
+          <p class="visitor-err" id="visitorErr"></p>
+        </div>
+
+        <!-- Etapa 2: Calendário -->
+        <div id="visitorStep2" style="display:none">
+          <button class="visitor-back-btn" onclick="visitorGoBack()">← Voltar aos dados</button>
+          <div class="sched-week-nav" style="margin-top:.75rem">
+            <button class="sched-nav-btn" id="vSchedPrev" onclick="vSchedPrev()">‹</button>
+            <span class="sched-week-label" id="vSchedWeekLabel"></span>
+            <button class="sched-nav-btn" id="vSchedNext" onclick="vSchedNext()">›</button>
+          </div>
+          <div id="vSchedCalendar" class="sched-cal-grid" style="margin-bottom:1rem"></div>
+          <div id="vSchedSummary" class="visitor-summary" style="display:none">
+            <div id="vSchedSumInfo"></div>
+            <button class="visitor-confirm-btn" id="vConfirmBtn" onclick="visitorConfirm()">✓ Confirmar Aula Experimental</button>
+          </div>
+          <p class="visitor-err" id="visitorCalErr"></p>
+        </div>
+
+        <!-- Etapa 3: Sucesso -->
+        <div id="visitorStep3" style="display:none" class="visitor-success">
+          <div class="visitor-success-ico">🎉</div>
+          <h3>Aula agendada!</h3>
+          <p id="visitorSuccessMsg"></p>
+          <button class="visitor-back-btn" style="margin-top:1rem" onclick="visitorReset()">← Agendar outra</button>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- APP -->
+<!-- ════════════════════════════════════════════
+     APP (após login)
+════════════════════════════════════════════ -->
 <div id="app" style="display:none">
   <header>
     <div class="hdr-brand">
@@ -78,11 +178,18 @@
 <script src="js/auth.js"></script>
 <script src="js/metronome.js"></script>
 <script src="js/scheduling.js"></script>
+<script src="js/visitor.js"></script>
 <script src="js/student.js"></script>
 <script src="js/professor.js"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => checkSession());
+  document.addEventListener('DOMContentLoaded', () => {
+    checkSession();
+    // Mostrar/ocultar campo de experiência
+    document.getElementById('vPlays').addEventListener('change', function() {
+      document.getElementById('vExpField').style.display = this.value === 'sim' ? 'block' : 'none';
+    });
+  });
 </script>
 </body>
 </html>

@@ -186,3 +186,37 @@
   .sched-cal-grid   { grid-template-columns: repeat(2, 1fr); }
   .prof-sched-stats  { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Tags de visitante na tabela ── */
+.visitor-tag {
+  display: inline-block;
+  background: rgba(201,169,110,0.15);
+  border: 1px solid rgba(201,169,110,0.3);
+  color: var(--gold2);
+  font-size: .62rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  vertical-align: middle;
+  margin-left: 5px;
+  letter-spacing: .04em;
+}
+
+.visitor-detail {
+  font-size: .72rem;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.6;
+}
+
+.badge--visitor {
+  background: rgba(201,169,110,0.1);
+  color: var(--gold2);
+  border: 1px solid rgba(201,169,110,0.2);
+}
+
+.badge--student {
+  background: rgba(61,100,139,0.15);
+  color: #7ab0d4;
+  border: 1px solid rgba(61,100,139,0.25);
+}
