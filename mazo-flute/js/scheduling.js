@@ -19,7 +19,7 @@ const SCHED_END   = (() => { const d = new Date(SCHED_START); d.setFullYear(d.ge
 
 const PLAN_DATA = {
   trial:    { label: 'Aula Teste',  price: 50,  sub: '',      desc: '1 aula experimental',    aulas: '1 aula' },
-  single:   { label: 'Unitário',   price: 80,  sub: '/mês',  desc: '1 aula por mês',          aulas: '1 aula/mês' },
+  single:   { label: 'Unitário',   price: 100,  sub: '/mês',  desc: '1 aula por mês',          aulas: '1 aula/mês' },
   biweekly: { label: 'Quinzenal',  price: 160, sub: '/mês',  desc: '2 aulas por mês',         aulas: '2 aulas/mês' },
   monthly:  { label: 'Mensal',     price: 200, sub: '/mês',  desc: '4 aulas por mês',         aulas: '4 aulas/mês' },
   annual:   { label: 'Anual',      price: 175, sub: '/mês',  desc: '4 aulas/mês · pag. anual',aulas: '4 aulas/mês' },
