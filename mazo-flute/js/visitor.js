@@ -9,8 +9,7 @@ const V_PLAN_ID    = 'trial';      // visitante sempre agenda aula teste
 const V_PLAN_LABEL = 'Aula Experimental (Visitante)';
 const V_PLAN_PRICE = 50;
 
-const _HORARIOS = ['08:00','10:00','14:00','16:00','18:00','19:00','20:00'];
-const _DIAS     = ['Seg','Ter','Qua','Qui','Sex'];
+// Reutiliza HORARIOS e DIAS definidos em scheduling.js (globais)
 
 // ── Máscara CPF ──────────────────────────────
 function maskCpf(el) {
@@ -103,7 +102,7 @@ async function vRenderCal() {
     const ds     = _vFmtDate(date);
     const isPast = date < today;
 
-    const slots = _HORARIOS.map(time => {
+    const slots = HORARIOS.map(time => {
       const key    = `${ds}|${time}`;
       const isMe   = _vPickedSlot && _vPickedSlot.key === key;
       const booked = bookedKeys.has(key);
@@ -111,11 +110,11 @@ async function vRenderCal() {
       if (isPast)  return `<div class="sched-slot slot-past">${time}</div>`;
       if (isMe)    return `<div class="sched-slot slot-selected" onclick="vUnpick()">${time}</div>`;
       if (booked)  return `<div class="sched-slot slot-booked">${time}</div>`;
-      return `<div class="sched-slot slot-avail" onclick="vPickSlot('${ds}','${time}','${_DIAS[idx]} ${date.getDate()}')">${time}</div>`;
+      return `<div class="sched-slot slot-avail" onclick="vPickSlot('${ds}','${time}','${DIAS[idx]} ${date.getDate()}')">${time}</div>`;
     }).join('');
 
     return `<div class="sched-day-col">
-      <div class="sched-day-header">${_DIAS[idx]}<br><small>${date.getDate()}</small></div>
+      <div class="sched-day-header">${DIAS[idx]}<br><small>${date.getDate()}</small></div>
       ${slots}
     </div>`;
   }).join('');
@@ -159,13 +158,17 @@ async function visitorConfirm() {
 
   try {
     // Verifica se esse email visitante já tem aula nessa semana
-    const dates = _vGetWeekDates(_vWeekOffset);
-    const snap  = await db.collection('bookings')
+    // Busca só por email para evitar índice composto — filtra data e status no cliente
+    const dates      = _vGetWeekDates(_vWeekOffset);
+    const weekStart  = _vFmtDate(dates[0]);
+    const weekEnd    = _vFmtDate(dates[4]);
+    const snapAll    = await db.collection('bookings')
       .where('studentEmail','==',email)
-      .where('slotDate','>=',_vFmtDate(dates[0]))
-      .where('slotDate','<=',_vFmtDate(dates[4]))
       .get();
-    const hasActive = snap.docs.some(d => d.data().status !== 'canceled');
+    const hasActive = snapAll.docs.some(d => {
+      const b = d.data();
+      return b.status !== 'canceled' && b.slotDate >= weekStart && b.slotDate <= weekEnd;
+    });
     if (hasActive) {
       errEl.textContent = 'Este email já tem uma aula nesta semana.';
       btn.disabled = false; btn.textContent = '✓ Confirmar Aula Experimental';

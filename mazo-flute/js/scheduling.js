@@ -19,7 +19,7 @@ const SCHED_END   = (() => { const d = new Date(SCHED_START); d.setFullYear(d.ge
 
 const PLAN_DATA = {
   trial:    { label: 'Aula Teste',  price: 50,  sub: '',      desc: '1 aula experimental',    aulas: '1 aula' },
-  single:   { label: 'Unitário',   price: 100,  sub: '/mês',  desc: '1 aula por mês',          aulas: '1 aula/mês' },
+  single:   { label: 'Unitário',   price: 80,   sub: '/mês',  desc: '1 aula por mês',          aulas: '1 aula/mês' },
   biweekly: { label: 'Quinzenal',  price: 160, sub: '/mês',  desc: '2 aulas por mês',         aulas: '2 aulas/mês' },
   monthly:  { label: 'Mensal',     price: 200, sub: '/mês',  desc: '4 aulas por mês',         aulas: '4 aulas/mês' },
   annual:   { label: 'Anual',      price: 175, sub: '/mês',  desc: '4 aulas/mês · pag. anual',aulas: '4 aulas/mês' },
@@ -513,7 +513,6 @@ function filterTable() {
   );
 
   const visCount  = filtered.filter(b=>(b.role||'student')==='visitor').length;
-  const studCount = filtered.length - visCount;
   document.getElementById('tableCount').textContent = `${filtered.length} aulas${visCount>0?' ('+visCount+' visitantes)':''}`;
 
   const tbody = document.getElementById('bookingsBody');
@@ -533,10 +532,11 @@ function filterTable() {
     const isPast  = b.slotDate < today;
     const isVisitor = (b.role||'student') === 'visitor';
     // Tooltip com dados extras do visitante
+    const _exp = parseInt(b.experience) || 0;
     const visitorDetail = isVisitor ? `
       📞 ${b.phone||'—'} &nbsp;|&nbsp; CPF: ${b.cpf||'—'} &nbsp;|&nbsp;
-      📍 ${b.city||''}/${b.state||''} &nbsp;|&nbsp;
-      🎵 ${b.playsFlute ? 'Toca flauta ('+b.experience+' ano'+((b.experience||0)!==1?'s':'')+')'  : 'Nunca tocou'}
+      📍 ${(b.city||'?')}/${(b.state||'?')} &nbsp;|&nbsp;
+      🎵 ${b.playsFlute ? 'Toca flauta ('+_exp+' ano'+(_exp!==1?'s':'')+')'  : 'Nunca tocou'}
     ` : '';
     return `
     <tr${isVisitor?' style="background:rgba(201,169,110,0.04)"':''}>

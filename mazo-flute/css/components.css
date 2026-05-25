@@ -118,8 +118,8 @@
 .card-stat--gold  { color: var(--gold3); }
 
 /* ---- Timeline ---- */
-.timeline-wrap { position: relative; }
-.timeline-wrap::before {
+#timeline { position: relative; }
+#timeline::before {
   content: '';
   position: absolute;
   left: 19px; top: 0; bottom: 0;
@@ -320,22 +320,6 @@
   margin-bottom: 1rem;
 }
 
-/* ---- Advance Button ---- */
-.advance-btn {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--success) 0%, #2d6b53 100%);
-  color: white;
-  font-family: var(--ff-body);
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-top: 1.5rem;
-}
-.advance-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(61,139,110,0.3); }
 
 /* ---- Scales ---- */
 .scales-grid {

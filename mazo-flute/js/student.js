@@ -88,7 +88,6 @@ function tplInicio(student, m, mIdx, streak) {
     </div>
     <div class="sec-title">🗺️ Trilha do Curso</div>
     <div class="cbox"><div id="timeline"></div></div>
-  </div>
   </div>`;
 }
 

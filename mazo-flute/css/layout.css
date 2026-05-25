@@ -3,25 +3,9 @@
    ============================================= */
 
 /* ---- Tela de Login ---- */
-#loginScreen {
-  position: fixed;
-  inset: 0;
-  z-index: 9000;
-  background: var(--navy);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.5s ease;
-}
 .logo-img {
   height: 45px;
   width: auto;
-}
-
-.hdr-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .login-logo-img {
@@ -31,13 +15,6 @@
 #loginScreen.out {
   opacity: 0;
   pointer-events: none;
-}
-
-.login-wrap {
-  width: 100%;
-  max-width: 460px;
-  padding: 0 1.5rem;
-  animation: risein 0.7s cubic-bezier(.22,1,.36,1) both;
 }
 
 .login-card {
@@ -511,3 +488,7 @@ header {
   .visitor-card { padding: 1.5rem 1.1rem; }
   .visitor-row  { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* ── Utilitários movidos de inline ── */
+.input-uppercase { text-transform: uppercase; }
+.visitor-back-btn--spaced { margin-top: 1rem; }
