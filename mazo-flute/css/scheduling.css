@@ -1,224 +1,360 @@
 /* =============================================
-   scheduling.css — Agendamento Mazo Flute
-   Paleta: navy + gold (harmônico com o site)
+   SCHEDULING.CSS — Agendamento Mazo Flute
+   Breakpoints: 768px · 480px · 360px
    ============================================= */
 
 /* ── Toast ── */
 #schedToast {
-  position: fixed; bottom: 2rem; left: 50%;
+  position: fixed;
+  bottom: 1.75rem;
+  left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: var(--navy2); border: 1px solid var(--gold);
-  color: var(--gold2); padding: 12px 28px; border-radius: 999px;
-  font-size: .88rem; font-weight: 600; z-index: 9999;
-  opacity: 0; pointer-events: none; transition: all .3s ease;
+  background: var(--navy2);
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  padding: 11px 26px;
+  border-radius: 999px;
+  font-size: .86rem;
+  font-weight: 600;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s ease;
   box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
 }
 #schedToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── Grid de planos ── */
+/* ══════════════════════════════════════════════
+   PLANOS
+══════════════════════════════════════════════ */
 .sched-plans-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem; margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.25rem;
 }
 
 .sched-plan-card {
-  position: relative; background: var(--white);
-  border: 1px solid var(--cream2); border-radius: var(--radius);
-  padding: 1.5rem 1.2rem 1.2rem; box-shadow: var(--shadow);
-  cursor: pointer; transition: transform .22s, box-shadow .22s, border-color .22s;
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--cream2);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.15rem 1.15rem;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform .22s, box-shadow .22s, border-color .22s;
 }
-.sched-plan-card:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(15,27,45,.12); border-color: var(--border2); }
-.sched-plan-card.featured { border-color: var(--gold); }
-.sched-plan-card.selected {
+.sched-plan-card:hover   { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(15,27,45,.12); border-color: var(--border2); }
+.sched-plan-card.featured{ border-color: var(--gold); }
+.sched-plan-card.selected{
   border: 2px solid var(--gold);
   background: linear-gradient(135deg, rgba(201,169,110,.07), rgba(201,169,110,.02));
-  box-shadow: 0 0 0 3px rgba(201,169,110,.2), 0 16px 36px rgba(15,27,45,.12);
+  box-shadow: 0 0 0 3px rgba(201,169,110,.18), 0 14px 34px rgba(15,27,45,.12);
 }
 
 .plan-badge {
-  position: absolute; top: -10px; right: 14px;
-  background: var(--gold); color: var(--navy);
-  font-size: .68rem; font-weight: 700; padding: 4px 12px;
-  border-radius: 999px; letter-spacing: .04em;
+  position: absolute;
+  top: -10px; right: 14px;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: .65rem; font-weight: 700;
+  padding: 3px 11px;
+  border-radius: 999px;
+  letter-spacing: .04em;
 }
-.plan-name { font-family: var(--ff-display); font-size: 1.25rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
-.plan-price { font-size: 1.75rem; font-weight: 700; color: var(--gold3); line-height: 1.2; margin-bottom: 4px; }
-.plan-price span { font-size: .82rem; font-weight: 400; color: var(--muted); }
-.plan-desc { font-size: .78rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.5; }
+.plan-name   { font-family: var(--ff-display); font-size: 1.2rem; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
+.plan-price  { font-size: 1.65rem; font-weight: 700; color: var(--gold3); line-height: 1.2; margin-bottom: 4px; }
+.plan-price span { font-size: .8rem; font-weight: 400; color: var(--muted); }
+.plan-desc   { font-size: .76rem; color: var(--muted); margin-bottom: .9rem; line-height: 1.5; }
+
 .plan-select-btn {
-  width: 100%; padding: 9px; background: transparent;
-  border: 1px solid var(--border2); border-radius: 8px;
-  color: var(--gold3); font-family: var(--ff-body); font-size: .82rem;
-  font-weight: 600; cursor: pointer; transition: all .2s;
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--gold3);
+  font-family: var(--ff-body);
+  font-size: .8rem; font-weight: 600;
+  cursor: pointer; transition: all .2s;
 }
 .sched-plan-card.selected .plan-select-btn,
 .plan-select-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--navy); }
 
-/* ── Barra de info ── */
+/* ══════════════════════════════════════════════
+   BARRA DE INFO
+══════════════════════════════════════════════ */
 .sched-info-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem; padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.1rem;
+  padding-bottom: .9rem;
   border-bottom: 1px solid var(--cream2);
 }
-.sched-plan-label { font-weight: 600; color: var(--navy); font-size: .9rem; }
-.sched-limit-note {
-  font-size: .78rem; color: var(--warn);
-  background: rgba(212,134,10,.08); border: 1px solid rgba(212,134,10,.22);
-  border-radius: 6px; padding: 5px 12px;
+.sched-plan-label  { font-weight: 600; color: var(--navy); font-size: .87rem; }
+.sched-limit-note  {
+  font-size: .75rem; color: var(--warn);
+  background: rgba(212,134,10,.08);
+  border: 1px solid rgba(212,134,10,.22);
+  border-radius: 6px; padding: 4px 11px;
 }
 
-/* ── Navegação de semana ── */
-.sched-week-nav { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+/* ══════════════════════════════════════════════
+   NAVEGAÇÃO DE SEMANA
+══════════════════════════════════════════════ */
+.sched-week-nav {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  margin-bottom: 1.25rem;
+}
 .sched-nav-btn {
-  width: 36px; height: 36px; border-radius: 50%; background: var(--navy);
-  border: 1px solid var(--border); color: var(--gold2); font-size: 1.2rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .2s; flex-shrink: 0;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  color: var(--gold2); font-size: 1.1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: .2s; flex-shrink: 0;
 }
 .sched-nav-btn:hover:not(:disabled) { background: var(--gold); color: var(--navy); }
-.sched-nav-btn:disabled { opacity: .35; cursor: not-allowed; }
-.sched-week-label { flex: 1; text-align: center; font-weight: 500; font-size: .9rem; color: var(--navy); }
-/* Na tela de visitante (fundo navy), o label precisa ser claro */
+.sched-nav-btn:disabled             { opacity: .32; cursor: not-allowed; }
+
+.sched-week-label {
+  flex: 1;
+  text-align: center;
+  font-weight: 500;
+  font-size: .87rem;
+  color: var(--navy);
+}
+/* label no fundo navy (visitor card) */
 .visitor-card .sched-week-label { color: var(--gold2); }
 
-/* ── Calendário ── */
-.sched-cal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-
-.sched-day-col { display: flex; flex-direction: column; gap: 6px; min-width: 80px; }
-.sched-day-header {
-  text-align: center; font-size: .7rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 6px 0;
+/* ══════════════════════════════════════════════
+   CALENDÁRIO
+══════════════════════════════════════════════ */
+.sched-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
 }
-.sched-day-header small { font-size: .9em; }
+
+.sched-day-col  { display: flex; flex-direction: column; gap: 5px; }
+.sched-day-header {
+  text-align: center;
+  font-size: .67rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); padding: 5px 0;
+}
+.sched-day-header small { font-size: .88em; }
 
 .sched-slot {
-  padding: 7px 4px; border-radius: 8px; text-align: center;
-  font-size: .74rem; font-weight: 500; border: 1px solid transparent;
-  transition: all .18s; line-height: 1.3; user-select: none;
+  padding: 7px 3px;
+  border-radius: 7px;
+  text-align: center;
+  font-size: .72rem; font-weight: 500;
+  border: 1px solid transparent;
+  transition: all .18s;
+  line-height: 1.3;
+  user-select: none;
 }
-.slot-avail { background: rgba(201,169,110,.08); border-color: rgba(201,169,110,.22); color: var(--gold3); cursor: pointer; }
-.slot-avail:hover { background: rgba(201,169,110,.2); border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(201,169,110,.15); }
-.slot-selected { background: var(--gold); border-color: var(--gold); color: var(--navy); font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(201,169,110,.3); }
-.slot-booked { background: rgba(15,27,45,.04); color: rgba(107,104,128,.4); cursor: not-allowed; opacity: .6; }
-.slot-past { background: transparent; color: rgba(107,104,128,.28); cursor: not-allowed; font-size: .65rem; }
-.slot-mine { background: rgba(61,139,110,.1); border-color: rgba(61,139,110,.3); color: var(--success); font-size: .67rem; font-weight: 600; cursor: default; }
+.slot-avail    { background: rgba(201,169,110,.08); border-color: rgba(201,169,110,.22); color: var(--gold3); cursor: pointer; }
+.slot-avail:hover { background: rgba(201,169,110,.2); border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 9px rgba(201,169,110,.14); }
+.slot-selected { background: var(--gold); border-color: var(--gold); color: var(--navy); font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(201,169,110,.28); }
+.slot-booked   { background: rgba(15,27,45,.04); color: rgba(107,104,128,.38); cursor: not-allowed; opacity: .55; }
+.slot-past     { background: transparent; color: rgba(107,104,128,.25); cursor: not-allowed; font-size: .62rem; }
+.slot-mine     { background: rgba(61,139,110,.1); border-color: rgba(61,139,110,.3); color: var(--success); font-size: .64rem; font-weight: 600; cursor: default; }
 
-/* ── Resumo / confirmação ── */
+/* ══════════════════════════════════════════════
+   RESUMO / CONFIRMAÇÃO
+══════════════════════════════════════════════ */
 .sched-summary-box {
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-  border: 1px solid var(--border2); border-radius: var(--radius);
-  padding: 1.5rem 1.75rem; margin-top: 1.5rem; animation: fadein .3s ease;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 1.35rem 1.6rem;
+  margin-top: 1.35rem;
+  animation: fadein .3s ease;
 }
-.sched-summary-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem; }
-.sched-sum-rows { display: flex; flex-direction: column; gap: 8px; }
-.sched-sum-row { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: rgba(255,255,255,.65); }
+.sched-summary-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+}
+.sched-sum-rows { display: flex; flex-direction: column; gap: 7px; }
+.sched-sum-row  { display: flex; align-items: center; gap: 9px; font-size: .86rem; color: rgba(255,255,255,.62); }
 .sched-sum-row strong { color: var(--gold2); }
+
 .sched-confirm-btn {
-  padding: 13px 28px; background: linear-gradient(135deg, var(--gold), var(--gold3));
-  border: none; border-radius: 10px; color: var(--navy); font-family: var(--ff-body);
-  font-size: .92rem; font-weight: 700; cursor: pointer; transition: .2s; white-space: nowrap;
+  padding: 12px 26px;
+  background: linear-gradient(135deg, var(--gold), var(--gold3));
+  border: none; border-radius: 10px;
+  color: var(--navy); font-family: var(--ff-body);
+  font-size: .9rem; font-weight: 700;
+  cursor: pointer; transition: .2s; white-space: nowrap;
 }
-.sched-confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,169,110,.3); }
+.sched-confirm-btn:hover    { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(201,169,110,.28); }
 .sched-confirm-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-/* ── Lista de aulas do aluno ── */
-.sched-bookings-list { display: flex; flex-direction: column; gap: 10px; }
+/* ══════════════════════════════════════════════
+   LISTA DE AULAS DO ALUNO
+══════════════════════════════════════════════ */
+.sched-bookings-list { display: flex; flex-direction: column; gap: 9px; }
+
 .sched-booking-card {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 1.25rem; background: var(--white); border: 1px solid var(--cream2);
-  border-radius: var(--radius); box-shadow: var(--shadow); transition: .2s; flex-wrap: wrap; gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .9rem 1.15rem;
+  background: var(--white);
+  border: 1px solid var(--cream2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: .2s;
+  flex-wrap: wrap;
+  gap: 9px;
 }
 .sched-booking-card:hover { border-color: var(--border2); }
-.sched-booking-date { font-weight: 600; font-size: .9rem; color: var(--navy); margin-bottom: 3px; }
-.sched-booking-plan { font-size: .78rem; color: var(--muted); }
-.sched-booking-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sched-booking-date  { font-weight: 600; font-size: .88rem; color: var(--navy); margin-bottom: 3px; }
+.sched-booking-plan  { font-size: .76rem; color: var(--muted); }
+.sched-booking-right { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
 
-/* ── Status ── */
-.sched-status { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: .72rem; font-weight: 700; }
-.s-ok     { background: rgba(61,139,110,.12); color: var(--success); border: 1px solid rgba(61,139,110,.25); }
-.s-warn   { background: rgba(212,134,10,.12); color: var(--warn);    border: 1px solid rgba(212,134,10,.25); }
-.s-cancel { background: rgba(192,57,43,.1);   color: var(--danger);  border: 1px solid rgba(192,57,43,.2); }
+/* status */
+.sched-status { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: .7rem; font-weight: 700; }
+.s-ok     { background: rgba(61,139,110,.12); color: var(--success); border: 1px solid rgba(61,139,110,.24); }
+.s-warn   { background: rgba(212,134,10,.12);  color: var(--warn);   border: 1px solid rgba(212,134,10,.24); }
+.s-cancel { background: rgba(192,57,43,.1);    color: var(--danger); border: 1px solid rgba(192,57,43,.2);  }
 
 .sched-cancel-btn {
-  background: none; border: 1px solid rgba(192,57,43,.25); border-radius: 6px;
-  color: var(--danger); font-family: var(--ff-body); font-size: .75rem;
-  padding: 4px 12px; cursor: pointer; transition: .2s;
+  background: none;
+  border: 1px solid rgba(192,57,43,.24);
+  border-radius: 6px;
+  color: var(--danger);
+  font-family: var(--ff-body);
+  font-size: .73rem;
+  padding: 4px 11px;
+  cursor: pointer; transition: .2s;
 }
-.sched-cancel-btn:hover { background: rgba(192,57,43,.08); }
+.sched-cancel-btn:hover { background: rgba(192,57,43,.07); }
 
-/* ── Dashboard professor ── */
+/* ══════════════════════════════════════════════
+   PROFESSOR — DASHBOARD
+══════════════════════════════════════════════ */
 .prof-sched-stats {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 1rem; margin-bottom: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: .9rem;
+  margin-bottom: 2.25rem;
 }
 
-/* ── Charts ── */
 .sched-charts-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.25rem; margin-bottom: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.1rem;
+  margin-bottom: 2.25rem;
 }
-.chart-card { background: var(--white); border: 1px solid var(--cream2); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
-.chart-card h4 { font-family: var(--ff-display); font-size: 1.1rem; color: var(--navy); margin-bottom: 1rem; }
+.chart-card {
+  background: var(--white);
+  border: 1px solid var(--cream2);
+  border-radius: var(--radius);
+  padding: 1.35rem;
+  box-shadow: var(--shadow);
+}
+.chart-card h4 {
+  font-family: var(--ff-display);
+  font-size: 1.05rem;
+  color: var(--navy);
+  margin-bottom: .9rem;
+}
 
-/* ── Toolbar tabela ── */
+/* toolbar */
 .sched-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px; padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--cream2); background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: .9rem 1.1rem;
+  border-bottom: 1px solid var(--cream2);
+  background: var(--cream);
 }
-.sched-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.sched-filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .sched-filter {
-  padding: 8px 12px; border: 1px solid var(--cream3); border-radius: 8px;
-  font-family: var(--ff-body); font-size: .82rem; color: var(--text);
-  background: var(--white); cursor: pointer;
+  padding: 7px 11px;
+  border: 1px solid var(--cream3);
+  border-radius: 8px;
+  font-family: var(--ff-body);
+  font-size: .8rem;
+  color: var(--text);
+  background: var(--white);
+  cursor: pointer;
 }
 .sched-filter:focus { outline: none; border-color: var(--gold); }
-.sched-count { background: var(--navy); color: var(--gold2); font-size: .78rem; font-weight: 600; padding: 5px 14px; border-radius: 999px; }
-
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .sched-plans-grid { grid-template-columns: repeat(2, 1fr); }
-  .sched-cal-grid   { grid-template-columns: repeat(3, 1fr); }
-  .sched-summary-inner { flex-direction: column; align-items: flex-start; }
-  .sched-charts-grid { grid-template-columns: 1fr; }
-  .prof-sched-stats  { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 480px) {
-  .sched-plans-grid { grid-template-columns: 1fr; }
-  .sched-cal-grid   { grid-template-columns: repeat(2, 1fr); }
-  .prof-sched-stats  { grid-template-columns: repeat(2, 1fr); }
+.sched-count {
+  background: var(--navy);
+  color: var(--gold2);
+  font-size: .75rem; font-weight: 600;
+  padding: 4px 13px;
+  border-radius: 999px;
 }
 
-/* ── Tags de visitante na tabela ── */
+/* visitante na tabela */
 .visitor-tag {
   display: inline-block;
-  background: rgba(201,169,110,0.15);
-  border: 1px solid rgba(201,169,110,0.3);
+  background: rgba(201,169,110,.14);
+  border: 1px solid rgba(201,169,110,.28);
   color: var(--gold2);
-  font-size: .62rem;
-  font-weight: 700;
+  font-size: .6rem; font-weight: 700;
   padding: 1px 7px;
   border-radius: 999px;
   vertical-align: middle;
   margin-left: 5px;
   letter-spacing: .04em;
 }
-
 .visitor-detail {
-  font-size: .72rem;
+  font-size: .7rem;
   color: var(--muted);
   margin-top: 4px;
-  line-height: 1.6;
+  line-height: 1.55;
+}
+.badge--visitor { background: rgba(201,169,110,.1);  color: var(--gold2); border: 1px solid rgba(201,169,110,.2); }
+.badge--student { background: rgba(61,100,139,.14);  color: #7ab0d4;      border: 1px solid rgba(61,100,139,.24); }
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE SCHEDULING
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sched-plans-grid  { grid-template-columns: repeat(2, 1fr); }
+  .sched-cal-grid    { grid-template-columns: repeat(3, 1fr); }
+  .sched-summary-inner { flex-direction: column; align-items: flex-start; }
+  .sched-charts-grid { grid-template-columns: 1fr; }
+  .prof-sched-stats  { grid-template-columns: repeat(3, 1fr); }
+  .sched-confirm-btn { width: 100%; text-align: center; }
 }
 
-.badge--visitor {
-  background: rgba(201,169,110,0.1);
-  color: var(--gold2);
-  border: 1px solid rgba(201,169,110,0.2);
+@media (max-width: 480px) {
+  .sched-plans-grid  { grid-template-columns: 1fr; }
+  .sched-cal-grid    { grid-template-columns: repeat(2, 1fr); }
+  .prof-sched-stats  { grid-template-columns: repeat(2, 1fr); }
+  .sched-summary-box { padding: 1rem 1.1rem; }
+  .sched-toolbar     { flex-direction: column; align-items: flex-start; }
+  .sched-filters     { width: 100%; }
+  .sched-filter      { flex: 1; }
+  .plan-price        { font-size: 1.4rem; }
 }
 
-.badge--student {
-  background: rgba(61,100,139,0.15);
-  color: #7ab0d4;
-  border: 1px solid rgba(61,100,139,0.25);
+@media (max-width: 360px) {
+  .sched-cal-grid   { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .sched-slot       { padding: 5px 2px; font-size: .65rem; }
+  .sched-day-header { font-size: .6rem; }
+  .prof-sched-stats { grid-template-columns: repeat(2, 1fr); gap: .65rem; }
 }
