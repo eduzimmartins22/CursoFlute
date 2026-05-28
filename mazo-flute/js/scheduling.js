@@ -153,6 +153,8 @@ async function renderSchedCal() {
   cal.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:.75rem;font-size:.85rem">Carregando horários...</div>`;
 
   // Busca agendamentos da semana (filtro de status no cliente para evitar índice composto)
+  // IMPORTANTE: bookedKeys = horários já ocupados por qualquer aluno
+  // Aluno só pode ter 1 aula por semana, mas professor pode ter múltiplas no mesmo dia
   let bookedKeys = new Set();
   let myDates    = new Set();
   try {
@@ -229,7 +231,7 @@ async function schedConfirm() {
       return;
     }
 
-    await db.collection('bookings').add({
+    const bookingData = {
       studentEmail: currentUser.email,
       studentName:  currentUser.name,
       plan:         _pickedPlan,
@@ -238,7 +240,16 @@ async function schedConfirm() {
       slotTime:     _pickedSlot.time,
       status:       'confirmed',
       createdAt:    new Date().toISOString(),
-    });
+      role:         currentUser.role || 'student',
+    };
+
+    const docRef = await db.collection('bookings').add(bookingData);
+    
+    // CRIAR NOTIFICAÇÃO PARA O PROFESSOR
+    if (typeof createNotification === 'function') {
+      const fullBookingData = { id: docRef.id, ...bookingData };
+      await createNotification(fullBookingData);
+    }
 
     schedToast('✓ Aula agendada com sucesso!');
     _pickedSlot = null; _pickedPlan = null;

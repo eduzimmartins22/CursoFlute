@@ -3,12 +3,14 @@
 async function loadProfessorPage() {
   document.getElementById('navBar').innerHTML = `
     <button class="nav-tab active" onclick="profNavTo('alunos',this)">🎓 Alunos</button>
-    <button class="nav-tab"        onclick="profNavTo('agendamentos',this)">📅 Agendamentos</button>`;
+    <button class="nav-tab"        onclick="profNavTo('agendamentos',this)">📅 Agendamentos</button>
+    <button class="nav-tab"        onclick="profNavTo('notificacoes',this)">🔔 Notificações <span id="notificationBadge" style="display:none;background:var(--danger);color:white;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:bold;margin-left:4px">0</span></button>`;
 
   document.getElementById('pagesContainer').innerHTML =
-    tplProfAlunos() + tplProfAgendamentos();
+    tplProfAlunos() + tplProfAgendamentos() + tplProfNotificacoes();
 
   await refreshProfessorPage();
+  await initNotifications();
 }
 
 function profNavTo(section, el) {
@@ -22,7 +24,25 @@ function profNavTo(section, el) {
     console.error('Página não encontrada: page-prof-' + section);
   }
   window.scrollTo(0, 0);
+  if (section === 'notificacoes') {
+    loadNotifications().then(() => {
+      renderNotificationPanel();
+      updateNotificationBadge();
+    });
+  }
   if (section === 'agendamentos') loadProfAgendamentos();
+}
+
+// ── Painel de Notificações ───────────────────────
+function tplProfNotificacoes() {
+  return `
+  <div id="page-prof-notificacoes" class="page">
+    <div class="prof-header">
+      <h2>🔔 Notificações</h2>
+      <p>Acompanhe todas as novas aulas agendadas. Receba também via WhatsApp.</p>
+    </div>
+    <div id="notificationPanel" class="notification-panel"></div>
+  </div>`;
 }
 
 // ── Painel de Alunos ──────────────────────────
