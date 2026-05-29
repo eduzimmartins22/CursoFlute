@@ -9,7 +9,7 @@
    3. Cole abaixo no campo CALLMEBOT_API_KEY
    ============================================= */
 
-const CALLMEBOT_PHONE   = '5527997475627';  // Seu número (já preenchido)
+const CALLMEBOT_PHONE   = '552797475627';  // Seu número (já preenchido)
 const CALLMEBOT_API_KEY = '4522876';               // ← Cole aqui sua chave do CallMeBot
 
 // ─────────────────────────────────────────────
