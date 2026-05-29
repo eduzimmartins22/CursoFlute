@@ -483,3 +483,32 @@
   .sched-day-header { font-size: .6rem; }
   .prof-sched-stats { grid-template-columns: repeat(2, 1fr); gap: .65rem; }
 }
+
+/* ── Notificações — toolbar e botão apagar ── */
+.notif-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.notif-count { font-size: .85rem; color: var(--muted); }
+.notif-mark-all-btn {
+  background: rgba(201,169,110,.12);
+  border: 1px solid rgba(201,169,110,.3);
+  color: var(--gold3);
+  border-radius: 6px;
+  padding: .3rem .75rem;
+  font-size: .78rem;
+  cursor: pointer;
+  font-family: var(--ff-body);
+}
+.notif-mark-all-btn:hover { background: rgba(201,169,110,.22); }
+.notif-delete-btn {
+  background: rgba(192,57,43,.08) !important;
+  color: var(--danger) !important;
+  border: 1px solid rgba(192,57,43,.25) !important;
+}
+.notif-delete-btn:hover { background: rgba(192,57,43,.18) !important; }

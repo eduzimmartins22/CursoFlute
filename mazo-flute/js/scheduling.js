@@ -569,6 +569,7 @@ function filterTable() {
         ${b.status==='canceled'
           ? `<button class="save-row-btn" onclick="profRestoreBooking('${b.id}')">Restaurar</button>`
           : ''}
+        <button class="save-row-btn" style="background:rgba(192,57,43,.15);color:var(--danger);border:1px solid rgba(192,57,43,.3)" onclick="profDeleteBooking('${b.id}')">🗑 Apagar</button>
       </td>
     </tr>`;
   }).join('');
@@ -581,5 +582,10 @@ async function profCancelBooking(id) {
 }
 async function profRestoreBooking(id) {
   await db.collection('bookings').doc(id).update({ status:'confirmed' });
+  await loadProfAgendamentos();
+}
+async function profDeleteBooking(id) {
+  if (!confirm('Apagar permanentemente este agendamento? Esta ação não pode ser desfeita.')) return;
+  await db.collection('bookings').doc(id).delete();
   await loadProfAgendamentos();
 }

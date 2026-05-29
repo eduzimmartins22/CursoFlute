@@ -175,7 +175,7 @@ async function visitorConfirm() {
       return;
     }
 
-    await db.collection('bookings').add({
+    const visitorBookingData = {
       studentEmail: email,
       studentName:  name,
       phone,
@@ -189,9 +189,16 @@ async function visitorConfirm() {
       slotDate:     _vPickedSlot.date,
       slotTime:     _vPickedSlot.time,
       status:       'confirmed',
-      role:         'visitor',          // marca como visitante
+      role:         'visitor',
       createdAt:    new Date().toISOString(),
-    });
+    };
+    const vDocRef = await db.collection('bookings').add(visitorBookingData);
+
+    // ── Notifica o professor (site + WhatsApp) ──
+    if (typeof createNotification === 'function') {
+      createNotification({ id: vDocRef.id, ...visitorBookingData })
+        .catch(e => console.warn('Notif visitante:', e));
+    }
 
     // Sucesso
     const d       = new Date(_vPickedSlot.date+'T12:00:00');
