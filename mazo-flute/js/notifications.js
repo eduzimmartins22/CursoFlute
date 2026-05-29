@@ -1,13 +1,4 @@
-/* =============================================
-   notifications.js — Notificações + WhatsApp
-   WhatsApp via CallMeBot (sem backend necessário)
 
-   CONFIGURAÇÃO (faça 1 vez):
-   1. No WhatsApp, mande esta mensagem para +34 644 10 30 44:
-      "I allow callmebot to send me messages"
-   2. Eles respondem com sua CALLMEBOT_API_KEY
-   3. Cole abaixo no campo CALLMEBOT_API_KEY
-   ============================================= */
 
 const CALLMEBOT_PHONE   = '552797475627';  // Seu número (já preenchido)
 const CALLMEBOT_API_KEY = '4522876';               // ← Cole aqui sua chave do CallMeBot
@@ -114,9 +105,9 @@ async function createNotification(bookingData) {
 // fetch mode:'no-cors' dispara o GET sem precisar
 // de backend — é o método correto para CallMeBot
 // ─────────────────────────────────────────────
-async function _sendWhatsApp(notif) {
+function _sendWhatsApp(notif) {
   if (!CALLMEBOT_API_KEY) {
-    console.warn('WhatsApp: CALLMEBOT_API_KEY não configurado em notifications.js.');
+    console.warn('WhatsApp: defina CALLMEBOT_API_KEY em notifications.js');
     return;
   }
 
@@ -125,29 +116,36 @@ async function _sendWhatsApp(notif) {
     weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
   });
   const planLabel = (typeof PLAN_DATA !== 'undefined' && PLAN_DATA[notif.plan])
-    ? PLAN_DATA[notif.plan].label : (notif.plan || '—');
+    ? PLAN_DATA[notif.plan].label : (notif.plan || '-');
   const isVisitor = notif.role === 'visitor';
 
-  let msg = `🎵 NOVA AULA - Mazo Flute\n\n`;
-  msg += `👤 ${notif.studentName}`;
-  msg += isVisitor ? ` (Visitante)\n` : ` (Aluno)\n`;
-  msg += `📅 ${dateStr}\n`;
-  msg += `⏰ ${notif.slotTime}\n`;
-  msg += `📧 ${notif.studentEmail}\n`;
-  if (isVisitor && notif.phone) msg += `📞 ${notif.phone}\n`;
-  if (isVisitor && notif.city)  msg += `📍 ${notif.city}/${notif.state}\n`;
-  msg += `🎓 ${planLabel} - R$${notif.price}`;
+  // Sem emojis — evita URL gigante que trunca a mensagem no CallMeBot
+  let msg = 'NOVA AULA - Mazo Flute\n\n';
+  msg += `Aluno: ${notif.studentName}`;
+  msg += isVisitor ? ' (Visitante)\n' : ' (Aluno)\n';
+  msg += `Data: ${dateStr}\n`;
+  msg += `Horario: ${notif.slotTime}\n`;
+  msg += `Email: ${notif.studentEmail}\n`;
+  if (isVisitor && notif.phone) msg += `Telefone: ${notif.phone}\n`;
+  if (isVisitor && notif.city)  msg += `Cidade: ${notif.city}/${notif.state}\n`;
+  msg += `Plano: ${planLabel} - R$${notif.price}`;
 
-  const url = `https://api.callmebot.com/whatsapp.php`
-    + `?phone=${CALLMEBOT_PHONE}`
-    + `&text=${encodeURIComponent(msg)}`
-    + `&apikey=${CALLMEBOT_API_KEY}`;
+  const url = 'https://api.callmebot.com/whatsapp.php'
+    + '?phone=' + CALLMEBOT_PHONE
+    + '&text=' + encodeURIComponent(msg)
+    + '&apikey=' + CALLMEBOT_API_KEY;
 
+  console.log('WhatsApp URL:', url);
+
+  // Iframe invisivel — faz GET real sem problema de CORS
+  // Mais confiavel que fetch no-cors em qualquer browser
   try {
-    // mode:'no-cors' contorna o bloqueio de CORS do CallMeBot
-    // O request chega ao servidor mesmo sem ler a resposta
-    await fetch(url, { method: 'GET', mode: 'no-cors' });
-    console.log('✓ WhatsApp enviado via CallMeBot');
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    setTimeout(() => { try { document.body.removeChild(iframe); } catch(_){} }, 8000);
+    console.log('WhatsApp: iframe disparado');
   } catch (e) {
     console.warn('WhatsApp falhou:', e.message);
   }
