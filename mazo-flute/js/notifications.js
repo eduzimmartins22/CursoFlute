@@ -9,13 +9,10 @@
    3. Cole a chave recebida em CALLMEBOT_API_KEY abaixo
    ============================================= */
 
-const CALLMEBOT_PHONE   = '5527997475627';   // Seu número (já preenchido)
-const CALLMEBOT_API_KEY = '';                 // ← Cole aqui a chave recebida pelo WhatsApp
+const CALLMEBOT_PHONE   = '5527997475627';   
+const CALLMEBOT_API_KEY = '4522876';                
 
-// ─────────────────────────────────────────────
-// Listener em tempo real (Firestore onSnapshot)
-// Atualiza o badge automaticamente sem reload
-// ─────────────────────────────────────────────
+
 let _notifUnsubscribe = null;
 let _notifCache = [];
 
